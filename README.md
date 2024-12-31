@@ -1,1 +1,3 @@
-regex__gt_components.abap - REGEX, cl_abap_structdescr( cl_abap_typedescr=>describe_by_name
+Набор разрозненных фрагментов кода на ABAP для ускорения реализации проектов внедрения SAP BW
+ABAP code snippets to accelerate SAP BW implementation projects
+
