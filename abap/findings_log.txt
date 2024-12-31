@@ -124,7 +124,7 @@ Core Data Services (CDS) is an infrastructure for defining and consuming semanti
 
         HANA CDS: HANA CDS allows to develop applications directly on the database without using an application server  
         and to create metadata repository directly on database. CDS provides the possibility to define the artifacts that make- 
-        up the data persistence model. The DDL’s (an executable file) of CDS allows to define the database tables, views,  
+        up the data persistence model. The DDLвЂ™s (an executable file) of CDS allows to define the database tables, views,  
         data types by wrapping the native HANA SQL statements and enriching them with semantic properties.
          
         ABAP CDS: The current ABAP dictionary has the capabilities of defining tables, views and data types. Adding to this   
@@ -140,9 +140,9 @@ Core Data Services (CDS) is an infrastructure for defining and consuming semanti
         function on SAP HANA only and ABAP CDS is open.
 
 ==============
-ABAP. Невозможно использовать pool-таблицы в SELECT-JOIN-операциях... Надо заменять на read table... внутри loop at...
+ABAP. ГЌГҐГўГ®Г§Г¬Г®Г¦Г­Г® ГЁГ±ГЇГ®Г«ГјГ§Г®ГўГ ГІГј pool-ГІГ ГЎГ«ГЁГ¶Г» Гў SELECT-JOIN-Г®ГЇГҐГ°Г Г¶ГЁГїГµ... ГЌГ Г¤Г® Г§Г Г¬ГҐГ­ГїГІГј Г­Г  read table... ГўГ­ГіГІГ°ГЁ loop at...
 ==============
-BW. Composite provider может быть источником данных!
+BW. Composite provider Г¬Г®Г¦ГҐГІ ГЎГ»ГІГј ГЁГ±ГІГ®Г·Г­ГЁГЄГ®Г¬ Г¤Г Г­Г­Г»Гµ!
 ==============
 If CDS view have no input parameters (i.e. it is a common view inside DB, not a table function), you can import it into BW as OpenODS View based on the corresponding view inside HDB and use it for reporting. Then put it into Composite Provider in order to make transformations available (Composite Provider can be the source of a transformation, OpenODS View cannot). In such way you can consume also HANA information views.
 But keep in mind, that OpenODS view is like a proxy object to HDB (not an ABAP dictionary), so it doesn't know of changes in its source. You have to keep changes in sync manually.
@@ -154,10 +154,10 @@ try
 catchs all exceptions
 https://scn.sap.com/thread/919564
 ===============
-ассоциации в CDS-view: определяются после select на перед {
+Г Г±Г±Г®Г¶ГЁГ Г¶ГЁГЁ Гў CDS-view: Г®ГЇГ°ГҐГ¤ГҐГ«ГїГѕГІГ±Гї ГЇГ®Г±Г«ГҐ select Г­Г  ГЇГҐГ°ГҐГ¤ {
 The syntax for defining and using associations is a high-value wrapping of the syntax for joins. Using associations instead of directly programming joins makes it easier to read the definition of a CDS view.
 ===============
-CDS-view - по-русски колонки называть нельзя (в "") - Они ж потом частью словаря ABAP становятся
+CDS-view - ГЇГ®-Г°ГіГ±Г±ГЄГЁ ГЄГ®Г«Г®Г­ГЄГЁ Г­Г Г§Г»ГўГ ГІГј Г­ГҐГ«ГјГ§Гї (Гў "") - ГЋГ­ГЁ Г¦ ГЇГ®ГІГ®Г¬ Г·Г Г±ГІГјГѕ Г±Г«Г®ГўГ Г°Гї ABAP Г±ГІГ Г­Г®ГўГїГІГ±Гї
 
 The data aging concept makes it possible to distinguish between current, "HOT", data and old, "COLD"), data in a database system. Application programmers define which data is hot or cold in a special temperature column in a database table. The entries in this column partition the data in the database table and makes it possible to archive obsolete data in a transparent way for application programmers. The application programmers decide whether they only want to read current data or obsolete data too. In most cases, applications only want to read current data and this is the default setting for CDS views.
 in SNWD_SO see
@@ -195,7 +195,7 @@ https://help.sap.com/abapdocu_750/en/abencds_f1_association.htm
 @ClientDependent: true
 @AbapCatalog.compiler.CompareFilter: true
 @AccessControl.authorizationCheck: #CHECK
-@EndUserText.label: 'Корреспонденция счетов (CDS)' 
+@EndUserText.label: 'ГЉГ®Г°Г°ГҐГ±ГЇГ®Г­Г¤ГҐГ­Г¶ГЁГї Г±Г·ГҐГІГ®Гў (CDS)' 
 @DataAging.noAgingRestriction: true
 // own annotations (don't use unntil 7.50)
 @v_ann1:'doc_date'
@@ -264,15 +264,15 @@ Analytics.query:true
 
 RSRTS_CDS_QUERY_CHECK
 
-Please check the generated BW InfoProvider (use transaction RSRTS_ODP_DIS with ODP Context “ABAP Core Data Service” and ODP Name ZAVDATA2_01 ). In particular, use the 'Check Metadata' function and inspect any potentially ignored associations.
+Please check the generated BW InfoProvider (use transaction RSRTS_ODP_DIS with ODP Context вЂњABAP Core Data ServiceвЂќ and ODP Name ZAVDATA2_01 ). In particular, use the 'Check Metadata' function and inspect any potentially ignored associations.
 
 https://blogs.sap.com/2017/03/23/abap-cds-consumption-view-features-ultimate-test/
 
 ==========================
-У BW-соединения в HANA Studio есть SQL Console!!!!
-как в DB02 (даже нельзя несколько SQL в одном экране вести...)
+Г“ BW-Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГї Гў HANA Studio ГҐГ±ГІГј SQL Console!!!!
+ГЄГ ГЄ Гў DB02 (Г¤Г Г¦ГҐ Г­ГҐГ«ГјГ§Гї Г­ГҐГ±ГЄГ®Г«ГјГЄГ® SQL Гў Г®Г¤Г­Г®Г¬ ГЅГЄГ°Г Г­ГҐ ГўГҐГ±ГІГЁ...)
 ============================
-Слова для поиска в SWDC ADT и BWMT
+Г‘Г«Г®ГўГ  Г¤Г«Гї ГЇГ®ГЁГ±ГЄГ  Гў SWDC ADT ГЁ BWMT
 Search for the SAP ABAP in Eclipse installation package and add it to the download basket.
 Search for the SAP BW Modeling Tools installation package and add it to the download basket.
 http://service.sap.com/sap/support/notes/1954169
@@ -282,26 +282,26 @@ Starting with the BW Modeling Tools 1.11 or higher and the SAP NetWeaver version
 
 http://service.sap.com/sap/support/notes/2071109
 ============================
-Теперь в BWMT Query designer видно свойства переменных в том же окне, а не после кучи кликов
-Там же можно мышкой перетаскивать элементы на области отчета
+Г’ГҐГЇГҐГ°Гј Гў BWMT Query designer ГўГЁГ¤Г­Г® Г±ГўГ®Г©Г±ГІГўГ  ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»Гµ Гў ГІГ®Г¬ Г¦ГҐ Г®ГЄГ­ГҐ, Г  Г­ГҐ ГЇГ®Г±Г«ГҐ ГЄГіГ·ГЁ ГЄГ«ГЁГЄГ®Гў
+Г’Г Г¬ Г¦ГҐ Г¬Г®Г¦Г­Г® Г¬Г»ГёГЄГ®Г© ГЇГҐГ°ГҐГІГ Г±ГЄГЁГўГ ГІГј ГЅГ«ГҐГ¬ГҐГ­ГІГ» Г­Г  Г®ГЎГ«Г Г±ГІГЁ Г®ГІГ·ГҐГІГ 
 ============================
-Создание объектов типа 'IOBJ' не поддерживается BW740SP14 via BWMT
+Г‘Г®Г§Г¤Г Г­ГЁГҐ Г®ГЎГєГҐГЄГІГ®Гў ГІГЁГЇГ  'IOBJ' Г­ГҐ ГЇГ®Г¤Г¤ГҐГ°Г¦ГЁГўГ ГҐГІГ±Гї BW740SP14 via BWMT
 ============================
 aDSO standard. End routine structure
       BEGIN OF _ty_s_TG_1,
-*      InfoObject: 0REQTSN Текущий номер транзакции запроса.
+*      InfoObject: 0REQTSN Г’ГҐГЄГіГ№ГЁГ© Г­Г®Г¬ГҐГ° ГІГ°Г Г­Г§Г ГЄГ¶ГЁГЁ Г§Г ГЇГ°Г®Г±Г .
         REQTSN           TYPE RSPM_REQUEST_TSN,
-*      InfoObject: 0RECORD Номер записи данных.
+*      InfoObject: 0RECORD ГЌГ®Г¬ГҐГ° Г§Г ГЇГЁГ±ГЁ Г¤Г Г­Г­Г»Гµ.
         RECORD           TYPE /BI0/OIRECORD,
-*      InfoObject: 0DOC_NUM BW: номер документа.
+*      InfoObject: 0DOC_NUM BW: Г­Г®Г¬ГҐГ° Г¤Г®ГЄГіГ¬ГҐГ­ГІГ .
         DOC_NUM           TYPE /BI0/OIDOC_NUM,
-*      InfoObject: 0RECORDMODE BW: дельта-метод: режим обновления.
+*      InfoObject: 0RECORDMODE BW: Г¤ГҐГ«ГјГІГ -Г¬ГҐГІГ®Г¤: Г°ГҐГ¦ГЁГ¬ Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГї.
         RECORDMODE           TYPE RODMUPDMOD,
-*      InfoObject: 0STORNO Индикатор сторно.
+*      InfoObject: 0STORNO Г€Г­Г¤ГЁГЄГ ГІГ®Г° Г±ГІГ®Г°Г­Г®.
         STORNO           TYPE /BI0/OISTORNO,
-*      InfoObject: 0CUSTOMER Номер клиента.
+*      InfoObject: 0CUSTOMER ГЌГ®Г¬ГҐГ° ГЄГ«ГЁГҐГ­ГІГ .
         CUSTOMER           TYPE /BI0/OICUSTOMER,
-*      InfoObject: 0TCTCOUNT Число.
+*      InfoObject: 0TCTCOUNT Г—ГЁГ±Г«Г®.
         TCTCOUNT           TYPE /BI0/OITCTCOUNT,
       END   OF _ty_s_TG_1.
 Need to fill 0REQTSN 0RECORD !!!
@@ -310,22 +310,22 @@ for comparison - the same for standard DSO
       BEGIN OF _ty_s_TG_1,
 *      Field: RECORD.
         RECORD           TYPE RSARECORD,
-*      InfoObject: 0DOC_NUM BW: номер документа.
+*      InfoObject: 0DOC_NUM BW: Г­Г®Г¬ГҐГ° Г¤Г®ГЄГіГ¬ГҐГ­ГІГ .
         DOC_NUM           TYPE /BI0/OIDOC_NUM,
-*      InfoObject: 0RECORDMODE BW: дельта-метод: режим обновления.
+*      InfoObject: 0RECORDMODE BW: Г¤ГҐГ«ГјГІГ -Г¬ГҐГІГ®Г¤: Г°ГҐГ¦ГЁГ¬ Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГї.
         RECORDMODE           TYPE RODMUPDMOD,
-*      InfoObject: 0CUSTOMER Номер клиента.
+*      InfoObject: 0CUSTOMER ГЌГ®Г¬ГҐГ° ГЄГ«ГЁГҐГ­ГІГ .
         CUSTOMER           TYPE /BI0/OICUSTOMER,
-*      InfoObject: 0STORNO Индикатор сторно.
+*      InfoObject: 0STORNO Г€Г­Г¤ГЁГЄГ ГІГ®Г° Г±ГІГ®Г°Г­Г®.
         STORNO           TYPE /BI0/OISTORNO,
-*      InfoObject: 0TCTCOUNT Число.
+*      InfoObject: 0TCTCOUNT Г—ГЁГ±Г«Г®.
         TCTCOUNT           TYPE /BI0/OITCTCOUNT,
       END   OF _ty_s_TG_1.
 
 ===========================
 Join not allowed for CompositeProviders which can be used as PartProvider
 ===========================
-* See report RSO_CONVERT_IPRO_TO_HCPR 
+* See report RSO_CONVERT_IPRO_TO_HCPRВ 
 Not work if  multiprovider has outflow or infoset as partprovider
 http://scn.sap.com/community/data-warehousing/bw/blog/2015/11/02/conversion-approach-of-composite-provider-from-copr-to-hcpr
 ===========================
@@ -360,12 +360,12 @@ If you use SLT for all, all the monitoring, setup etc is done in the SLT SAPGUI 
 One part of HANA SDI is the framework to receive real time changes.  
 Second part of HANA SDI is DP agent with different adapters whose purpose is to identify changes and send them to HANA.
 
-Это функция адаптера - определять изменения (через логи, поле). Потому что это пришло из мира Sybase SRS.
+ГќГІГ® ГґГіГ­ГЄГ¶ГЁГї Г Г¤Г ГЇГІГҐГ°Г  - Г®ГЇГ°ГҐГ¤ГҐГ«ГїГІГј ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГї (Г·ГҐГ°ГҐГ§ Г«Г®ГЈГЁ, ГЇГ®Г«ГҐ). ГЏГ®ГІГ®Г¬Гі Г·ГІГ® ГЅГІГ® ГЇГ°ГЁГёГ«Г® ГЁГ§ Г¬ГЁГ°Г  Sybase SRS.
 This is part of the SAP Replication Server documentation which supplies the core of EIM/SDI
 
 Now it depends on what you need. If all you are doing is SAP to Hana 1:1 replication and ABAP is your way to go, all the nice features SDI provides, all the integration might not be worth that much, hence SLT by itself is fine. But if you want to do just a little bit more, I would use a SLT (or similar) adapter to provide the changes and Hana transformations to consume the change
 
-SLT можно подключить к HANA нгапрямую (В таблицу писать), так и через SDI-адаптер...
+SLT Г¬Г®Г¦Г­Г® ГЇГ®Г¤ГЄГ«ГѕГ·ГЁГІГј ГЄ HANA Г­ГЈГ ГЇГ°ГїГ¬ГіГѕ (Г‚ ГІГ ГЎГ«ГЁГ¶Гі ГЇГЁГ±Г ГІГј), ГІГ ГЄ ГЁ Г·ГҐГ°ГҐГ§ SDI-Г Г¤Г ГЇГІГҐГ°...
 
 customers will find the options SDI provides interesting still. In the sidecar scenario they might like the fact that SDI does not require the ERP to be brought into a read-only mode during the initial load, they might prefer the higher speed during initial load. And maybe they want to do some transformations later one.
 
@@ -405,7 +405,7 @@ In the second version you need to connect SDI and SLT somehow - and that is done
 
 ==============
 ODP
-HANA System единой пока не нашел в списке SAP BW 7.5
+HANA System ГҐГ¤ГЁГ­Г®Г© ГЇГ®ГЄГ  Г­ГҐ Г­Г ГёГҐГ« Гў Г±ГЇГЁГ±ГЄГҐ SAP BW 7.5
 
 You can use Operational Data Provisioning (ODP) to connect the SAP HANA database of an ABAP system as the source system to the BW system. Communication is performed using RFC. With the ODP context for SAP HANA (HANA), analytic views, calculation views and associated attribute views are provided for replication into BW. This allows you to perform calculations in the SAP HANA database on the views, before they are loaded into BW. These calculations could be currency translations and restricted key figures or key figures calculated before aggregation for example, or joins and unions.
 
@@ -419,7 +419,7 @@ Transferring data from the SAP HANA database with ODP is not supported for the f
 * Real-Time Data Acquisition
 =========================
 ODQ ODP
-Срок хранения
+Г‘Г°Г®ГЄ ГµГ°Г Г­ГҐГ­ГЁГї
 Retention Period for Data in the Delta Queue. There are three different period:
 To recover a delta process that has been canceled:This is the minimum retention period for data in the queue tables that is flagged as retrieved in the delta process or as canceled. Once this period has expired, all data flagged as retrieved or invalid is deleted from the delta queue by a periodically scheduled reorganization process.
 A delta process can always be reset or repeated at this time for individual subscribers.
@@ -452,9 +452,9 @@ If data with low or medium relevance that has not yet been declared retrieved or
 ==============
 
 Tables RODP* for ODP
-Table ROOSATTR - EXPOSE_EXTERNAL = X – разрешен для ODP
-По умолчанию – экстракторы активны и в ERP таблица ROOSATTR заполнена…
-Задание запускается видимо после чтения из первого источника (но через ODP- исходную систему в BW)
+Table ROOSATTR - EXPOSE_EXTERNAL = X вЂ“ Г°Г Г§Г°ГҐГёГҐГ­ Г¤Г«Гї ODP
+ГЏГ® ГіГ¬Г®Г«Г·Г Г­ГЁГѕ вЂ“ ГЅГЄГ±ГІГ°Г ГЄГІГ®Г°Г» Г ГЄГІГЁГўГ­Г» ГЁ Гў ERP ГІГ ГЎГ«ГЁГ¶Г  ROOSATTR Г§Г ГЇГ®Г«Г­ГҐГ­Г вЂ¦
+Г‡Г Г¤Г Г­ГЁГҐ Г§Г ГЇГіГ±ГЄГ ГҐГІГ±Гї ГўГЁГ¤ГЁГ¬Г® ГЇГ®Г±Г«ГҐ Г·ГІГҐГ­ГЁГї ГЁГ§ ГЇГҐГ°ГўГ®ГЈГ® ГЁГ±ГІГ®Г·Г­ГЁГЄГ  (Г­Г® Г·ГҐГ°ГҐГ§ ODP- ГЁГ±ГµГ®Г¤Г­ГіГѕ Г±ГЁГ±ГІГҐГ¬Гі Гў BW)
 
 =================
 http://ims-bw:8080/wiki/index.php/BW-MT-HCPR
@@ -556,9 +556,9 @@ Search in BW
 TCode RSOSM
 Note 2152359 - BW search/input help for InfoObjects returns no results
 
-должен быть заполнен пакет SAP HANA в RSOSM
+Г¤Г®Г«Г¦ГҐГ­ ГЎГ»ГІГј Г§Г ГЇГ®Г«Г­ГҐГ­ ГЇГ ГЄГҐГІ SAP HANA Гў RSOSM
 system-local.bw.bwsearch.SAP<SID>
-и тогда все перегенерирусется и будет ОК
+ГЁ ГІГ®ГЈГ¤Г  ГўГ±ГҐ ГЇГҐГ°ГҐГЈГҐГ­ГҐГ°ГЁГ°ГіГ±ГҐГІГ±Гї ГЁ ГЎГіГ¤ГҐГІ ГЋГЉ
 
 documentation
 
@@ -601,7 +601,7 @@ select * from "CURR_CONV_VIEW";
 
 ==========
 
-определить тип ADSO можно по его xml-описания
+Г®ГЇГ°ГҐГ¤ГҐГ«ГЁГІГј ГІГЁГЇ ADSO Г¬Г®Г¦Г­Г® ГЇГ® ГҐГЈГ® xml-Г®ГЇГЁГ±Г Г­ГЁГї
 ==========
 Easy Query
 https://wiki.scn.sap.com/wiki/display/BI/OT-BICS-EQ
@@ -609,19 +609,19 @@ Function RSEQ_START_GENERATION: generation of function module and web service st
 allows fast generation of an Easy query function adn web service
 can be used to check error message in more details
 ==========
-Ракурс в ANalysis не сохранить, если активна стандартная система переносов... Ну что за нах...
+ГђГ ГЄГіГ°Г± Гў ANalysis Г­ГҐ Г±Г®ГµГ°Г Г­ГЁГІГј, ГҐГ±Г«ГЁ Г ГЄГІГЁГўГ­Г  Г±ГІГ Г­Г¤Г Г°ГІГ­Г Гї Г±ГЁГ±ГІГҐГ¬Г  ГЇГҐГ°ГҐГ­Г®Г±Г®Гў... ГЌГі Г·ГІГ® Г§Г  Г­Г Гµ...
 
-Стандартная система переносов активна. Сохранение невозможно. (RSBOLAP-019, BWD):
-Диагностика
+Г‘ГІГ Г­Г¤Г Г°ГІГ­Г Гї Г±ГЁГ±ГІГҐГ¬Г  ГЇГҐГ°ГҐГ­Г®Г±Г®Гў Г ГЄГІГЁГўГ­Г . Г‘Г®ГµГ°Г Г­ГҐГ­ГЁГҐ Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®. (RSBOLAP-019, BWD):
+Г„ГЁГ ГЈГ­Г®Г±ГІГЁГЄГ 
 The standard transport is switched on.
-Системные операции
+Г‘ГЁГ±ГІГҐГ¬Г­Г»ГҐ Г®ГЇГҐГ°Г Г¶ГЁГЁ
 The object cannot be saved.
-Процедура
+ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г 
 Switch off the standard transport and create a transport request for "Transport Requests BEx".
 You can do this in the Transport Connection functional area of the Data Warehousing Workbench by choosing Edit -> Execute Transport.
 ============
 
-в ФМе rsdmd_mdmt поставить брейк-поинт в районе 280 строки, в дебуггере поменять l_use_old_ui на Х
+Гў Г”ГЊГҐ rsdmd_mdmt ГЇГ®Г±ГІГ ГўГЁГІГј ГЎГ°ГҐГ©ГЄ-ГЇГ®ГЁГ­ГІ Гў Г°Г Г©Г®Г­ГҐ 280 Г±ГІГ°Г®ГЄГЁ, Гў Г¤ГҐГЎГіГЈГЈГҐГ°ГҐ ГЇГ®Г¬ГҐГ­ГїГІГј l_use_old_ui Г­Г  Г•
 =============
 Design Studio
 
@@ -698,31 +698,31 @@ SELECT f1, f2, kf1 FROM t1
 1;2;200
 
 
-вернет разные результаты
+ГўГҐГ°Г­ГҐГІ Г°Г Г§Г­Г»ГҐ Г°ГҐГ§ГіГ«ГјГІГ ГІГ»
 
 =============
 
-Если внутри метацепочки есть красный статус и она дошла до конца, то общий статус метацепочки красный, и в главной цепочке, из  которой вызывается метацепочка, дальнейше продолжение возможно только при типе соединения "ЛЮБОЙ". Если стоит тип соединения ЗЕЛЕНЫЙ, то дальнейшее выполнение не будет выполняться.
+Г…Г±Г«ГЁ ГўГ­ГіГІГ°ГЁ Г¬ГҐГІГ Г¶ГҐГЇГ®Г·ГЄГЁ ГҐГ±ГІГј ГЄГ°Г Г±Г­Г»Г© Г±ГІГ ГІГіГ± ГЁ Г®Г­Г  Г¤Г®ГёГ«Г  Г¤Г® ГЄГ®Г­Г¶Г , ГІГ® Г®ГЎГ№ГЁГ© Г±ГІГ ГІГіГ± Г¬ГҐГІГ Г¶ГҐГЇГ®Г·ГЄГЁ ГЄГ°Г Г±Г­Г»Г©, ГЁ Гў ГЈГ«Г ГўГ­Г®Г© Г¶ГҐГЇГ®Г·ГЄГҐ, ГЁГ§  ГЄГ®ГІГ®Г°Г®Г© ГўГ»Г§Г»ГўГ ГҐГІГ±Гї Г¬ГҐГІГ Г¶ГҐГЇГ®Г·ГЄГ , Г¤Г Г«ГјГ­ГҐГ©ГёГҐ ГЇГ°Г®Г¤Г®Г«Г¦ГҐГ­ГЁГҐ ГўГ®Г§Г¬Г®Г¦Г­Г® ГІГ®Г«ГјГЄГ® ГЇГ°ГЁ ГІГЁГЇГҐ Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГї "Г‹ГћГЃГЋГ‰". Г…Г±Г«ГЁ Г±ГІГ®ГЁГІ ГІГЁГЇ Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГї Г‡Г…Г‹Г…ГЌГ›Г‰, ГІГ® Г¤Г Г«ГјГ­ГҐГ©ГёГҐГҐ ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГҐ Г­ГҐ ГЎГіГ¤ГҐГІ ГўГ»ГЇГ®Г«Г­ГїГІГјГ±Гї.
 
 ============
 
-НА маркетинговых презентациях не подчеркивается, что продукт не умет делать все на всех комбинациях окружения, куда входит браузер (тип и версия), версия, vendor и тип ОС (настольная, серверная, мобильная), тип и версия платформы (HANA, NW, BI Platform) и даже доступный язык приложения
-См. например PAM for SAP Design Studio
+ГЌГЂ Г¬Г Г°ГЄГҐГІГЁГ­ГЈГ®ГўГ»Гµ ГЇГ°ГҐГ§ГҐГ­ГІГ Г¶ГЁГїГµ Г­ГҐ ГЇГ®Г¤Г·ГҐГ°ГЄГЁГўГ ГҐГІГ±Гї, Г·ГІГ® ГЇГ°Г®Г¤ГіГЄГІ Г­ГҐ ГіГ¬ГҐГІ Г¤ГҐГ«Г ГІГј ГўГ±ГҐ Г­Г  ГўГ±ГҐГµ ГЄГ®Г¬ГЎГЁГ­Г Г¶ГЁГїГµ Г®ГЄГ°ГіГ¦ГҐГ­ГЁГї, ГЄГіГ¤Г  ГўГµГ®Г¤ГЁГІ ГЎГ°Г ГіГ§ГҐГ° (ГІГЁГЇ ГЁ ГўГҐГ°Г±ГЁГї), ГўГҐГ°Г±ГЁГї, vendor ГЁ ГІГЁГЇ ГЋГ‘ (Г­Г Г±ГІГ®Г«ГјГ­Г Гї, Г±ГҐГ°ГўГҐГ°Г­Г Гї, Г¬Г®ГЎГЁГ«ГјГ­Г Гї), ГІГЁГЇ ГЁ ГўГҐГ°Г±ГЁГї ГЇГ«Г ГІГґГ®Г°Г¬Г» (HANA, NW, BI Platform) ГЁ Г¤Г Г¦ГҐ Г¤Г®Г±ГІГіГЇГ­Г»Г© ГїГ§Г»ГЄ ГЇГ°ГЁГ«Г®Г¦ГҐГ­ГЁГї
+Г‘Г¬. Г­Г ГЇГ°ГЁГ¬ГҐГ° PAM for SAP Design Studio
 
 ============
-Нельзя сохранят ракурсы!!! если активна стандартная система переносов.
+ГЌГҐГ«ГјГ§Гї Г±Г®ГµГ°Г Г­ГїГІ Г°Г ГЄГіГ°Г±Г»!!! ГҐГ±Г«ГЁ Г ГЄГІГЁГўГ­Г  Г±ГІГ Г­Г¤Г Г°ГІГ­Г Гї Г±ГЁГ±ГІГҐГ¬Г  ГЇГҐГ°ГҐГ­Г®Г±Г®Гў.
 
-Стандартная система переносов активна. Сохранение невозможно. (RSBOLAP-019, BWD):
-Диагностика
+Г‘ГІГ Г­Г¤Г Г°ГІГ­Г Гї Г±ГЁГ±ГІГҐГ¬Г  ГЇГҐГ°ГҐГ­Г®Г±Г®Гў Г ГЄГІГЁГўГ­Г . Г‘Г®ГµГ°Г Г­ГҐГ­ГЁГҐ Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®. (RSBOLAP-019, BWD):
+Г„ГЁГ ГЈГ­Г®Г±ГІГЁГЄГ 
 The standard transport is switched on.
-Системные операции
+Г‘ГЁГ±ГІГҐГ¬Г­Г»ГҐ Г®ГЇГҐГ°Г Г¶ГЁГЁ
 The object cannot be saved.
-Процедура
+ГЏГ°Г®Г¶ГҐГ¤ГіГ°Г 
 Switch off the standard transport and create a transport request for "Transport Requests BEx".
 You can do this in the Transport Connection functional area of the Data Warehousing Workbench by choosing Edit -> Execute Transport.
 
 =============
-Если открыть тяжелый эксель и одновременно работать в Analysis, то Analysis будет сильно тормозить. Надо закрыть тяжелый эксель ИЛИ отключить расчет формул на лету
+Г…Г±Г«ГЁ Г®ГІГЄГ°Г»ГІГј ГІГїГ¦ГҐГ«Г»Г© ГЅГЄГ±ГҐГ«Гј ГЁ Г®Г¤Г­Г®ГўГ°ГҐГ¬ГҐГ­Г­Г® Г°Г ГЎГ®ГІГ ГІГј Гў Analysis, ГІГ® Analysis ГЎГіГ¤ГҐГІ Г±ГЁГ«ГјГ­Г® ГІГ®Г°Г¬Г®Г§ГЁГІГј. ГЌГ Г¤Г® Г§Г ГЄГ°Г»ГІГј ГІГїГ¦ГҐГ«Г»Г© ГЅГЄГ±ГҐГ«Гј Г€Г‹Г€ Г®ГІГЄГ«ГѕГ·ГЁГІГј Г°Г Г±Г·ГҐГІ ГґГ®Г°Г¬ГіГ« Г­Г  Г«ГҐГІГі
 ============
 icon trend
 
@@ -741,11 +741,11 @@ Design Studio script modules
 Math
 Convert
 Layout
-и др. См. по списку по ctrl-space в коде
+ГЁ Г¤Г°. Г‘Г¬. ГЇГ® Г±ГЇГЁГ±ГЄГі ГЇГ® ctrl-space Гў ГЄГ®Г¤ГҐ
 ======
-расчет отклонения в цикле по значениям измерения DS. Приглось рассчитывать в DS, тк. Bex не может вычислять эту формулу для НИ. BEx НИ делает только для отображения.
-Только internalKey в качестве ключей. Иначе отображаемое представление показывается.
-Все ключевые поля (в строках и столбцах) должны быть перечислены в JSON-выражении.
+Г°Г Г±Г·ГҐГІ Г®ГІГЄГ«Г®Г­ГҐГ­ГЁГї Гў Г¶ГЁГЄГ«ГҐ ГЇГ® Г§Г­Г Г·ГҐГ­ГЁГїГ¬ ГЁГ§Г¬ГҐГ°ГҐГ­ГЁГї DS. ГЏГ°ГЁГЈГ«Г®Г±Гј Г°Г Г±Г±Г·ГЁГІГ»ГўГ ГІГј Гў DS, ГІГЄ. Bex Г­ГҐ Г¬Г®Г¦ГҐГІ ГўГ»Г·ГЁГ±Г«ГїГІГј ГЅГІГі ГґГ®Г°Г¬ГіГ«Гі Г¤Г«Гї ГЌГ€. BEx ГЌГ€ Г¤ГҐГ«Г ГҐГІ ГІГ®Г«ГјГЄГ® Г¤Г«Гї Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГї.
+Г’Г®Г«ГјГЄГ® internalKey Гў ГЄГ Г·ГҐГ±ГІГўГҐ ГЄГ«ГѕГ·ГҐГ©. Г€Г­Г Г·ГҐ Г®ГІГ®ГЎГ°Г Г¦Г ГҐГ¬Г®ГҐ ГЇГ°ГҐГ¤Г±ГІГ ГўГ«ГҐГ­ГЁГҐ ГЇГ®ГЄГ Г§Г»ГўГ ГҐГІГ±Гї.
+Г‚Г±ГҐ ГЄГ«ГѕГ·ГҐГўГ»ГҐ ГЇГ®Г«Гї (Гў Г±ГІГ°Г®ГЄГ Гµ ГЁ Г±ГІГ®Г«ГЎГ¶Г Гµ) Г¤Г®Г«Г¦Г­Г» ГЎГ»ГІГј ГЇГҐГ°ГҐГ·ГЁГ±Г«ГҐГ­Г» Гў JSON-ГўГ»Г°Г Г¦ГҐГ­ГЁГЁ.
 
 var lv_t = "C";
 var dimkey = DS_4.getMembers("0CALMONTH", 12);
@@ -771,13 +771,13 @@ TEXT_1.setText(lv_s);
 
 =====================
 
-{"0CALYEAR":"2016", - работает ОК
-{"0CALYEAR":2016, - не работает.
-НО
-{"0CALMONTH2":"3", - работает ОК
-{"0CALMONTH2":3, - работает OK.
+{"0CALYEAR":"2016", - Г°Г ГЎГ®ГІГ ГҐГІ ГЋГЉ
+{"0CALYEAR":2016, - Г­ГҐ Г°Г ГЎГ®ГІГ ГҐГІ.
+ГЌГЋ
+{"0CALMONTH2":"3", - Г°Г ГЎГ®ГІГ ГҐГІ ГЋГЉ
+{"0CALMONTH2":3, - Г°Г ГЎГ®ГІГ ГҐГІ OK.
 ================
-Категория, определенная в BI Platform, отображается отдельной группой в меню  BI Mobile, в группе All Reports
+ГЉГ ГІГҐГЈГ®Г°ГЁГї, Г®ГЇГ°ГҐГ¤ГҐГ«ГҐГ­Г­Г Гї Гў BI Platform, Г®ГІГ®ГЎГ°Г Г¦Г ГҐГІГ±Гї Г®ГІГ¤ГҐГ«ГјГ­Г®Г© ГЈГ°ГіГЇГЇГ®Г© Гў Г¬ГҐГ­Гѕ  BI Mobile, Гў ГЈГ°ГіГЇГЇГҐ All Reports
 ============================
 left = 0
 top = 0
@@ -786,7 +786,7 @@ hieght = auto
 bottom = 0
 right = 0
 
-такой порядок задания свойств элемента, чтобы он выравнвался по владельцу и занимал всю площадь
+ГІГ ГЄГ®Г© ГЇГ®Г°ГїГ¤Г®ГЄ Г§Г Г¤Г Г­ГЁГї Г±ГўГ®Г©Г±ГІГў ГЅГ«ГҐГ¬ГҐГ­ГІГ , Г·ГІГ®ГЎГ» Г®Г­ ГўГ»Г°Г ГўГ­ГўГ Г«Г±Гї ГЇГ® ГўГ«Г Г¤ГҐГ«ГјГ¶Гі ГЁ Г§Г Г­ГЁГ¬Г Г« ГўГ±Гѕ ГЇГ«Г®Г№Г Г¤Гј
 ==============================
 To set filter by date range  -
  DS_1.setFilter("Z_Date",{"low":DateFrom.getDate(),"high":DateTo.getDate()});
@@ -794,7 +794,7 @@ To set filter by date range  -
 To set date applied to show as text -
  Date_SelectedText.setText(DS_1.getFilterText("Z_Date"));
 =======================
-создание CSS3 patterns
+Г±Г®Г§Г¤Г Г­ГЁГҐ CSS3 patterns
 https://patternizer.com/izfa
 http://www.awwwards.com/background-patterns-designs-and-resources-for-websites.html
 ================
@@ -805,7 +805,7 @@ http://css-live.ru/css/zolotaya-rybka-css3-grid-layout.html
 Binding CSS with formatter function
 http://scn.sap.com/community/businessobjects-design-studio/blog/2015/10/29/bo-design-studio-css-tips-tricks-creating-alerts-by-data-cell-binding-in-css-class
 ===============
-Символ вместе с текстом (текст по правому краю, символ - тоже.)
+Г‘ГЁГ¬ГўГ®Г« ГўГ¬ГҐГ±ГІГҐ Г± ГІГҐГЄГ±ГІГ®Г¬ (ГІГҐГЄГ±ГІ ГЇГ® ГЇГ°Г ГўГ®Г¬Гі ГЄГ°Г Гѕ, Г±ГЁГ¬ГўГ®Г« - ГІГ®Г¦ГҐ.)
 .kpi-value-green {
   color: green;
   font-weight: bold;
@@ -827,19 +827,19 @@ http://www196.lunapic.com/editor/
 transparency editor
 
 ======
-стиль для grid и подстановка текста напрямую в ячейки GRID из CSS
+Г±ГІГЁГ«Гј Г¤Г«Гї grid ГЁ ГЇГ®Г¤Г±ГІГ Г­Г®ГўГЄГ  ГІГҐГЄГ±ГІГ  Г­Г ГЇГ°ГїГ¬ГіГѕ Гў ГїГ·ГҐГ©ГЄГЁ GRID ГЁГ§ CSS
 
 .basicGrid td{
   border:1px solid black;	
 }
 
 .basicGrid2 td#__cell0::BEFORE { 
- content: "Январь";
+ content: "ГџГ­ГўГ Г°Гј";
 }
 .basicGrid2 td#__cell1::BEFORE { 
- content: "Февраль";
+ content: "Г”ГҐГўГ°Г Г«Гј";
 
-для GRID указывать классы через пробел
+Г¤Г«Гї GRID ГіГЄГ Г§Г»ГўГ ГІГј ГЄГ«Г Г±Г±Г» Г·ГҐГ°ГҐГ§ ГЇГ°Г®ГЎГҐГ«
 
 ==============
 <html>
@@ -848,40 +848,40 @@ transparency editor
   <title>text-align</title>
   <style>
    div {
-    border: 1px solid black; /* Параметры рамки */
-    padding: 5px; /* Поля вокруг текста */
-    margin-bottom: 5px; /* Отступ снизу */
+    border: 1px solid black; /* ГЏГ Г°Г Г¬ГҐГІГ°Г» Г°Г Г¬ГЄГЁ */
+    padding: 5px; /* ГЏГ®Г«Гї ГўГ®ГЄГ°ГіГЈ ГІГҐГЄГ±ГІГ  */
+    margin-bottom: 5px; /* ГЋГІГ±ГІГіГЇ Г±Г­ГЁГ§Гі */
    }
    #left { text-align: left; }
    #right { text-align: right; }
    #center { text-align: center; }
    .content {
-    width: 75%; /* Ширина слоя */
-    background: #fc0; /* Цвет фона */
+    width: 75%; /* ГГЁГ°ГЁГ­Г  Г±Г«Г®Гї */
+    background: #fc0; /* Г–ГўГҐГІ ГґГ®Г­Г  */
    }
   </style>
  </head>
  <body>
-  <div id="left"><div class="content">Выравнивание по левому краю</div></div>
-  <div id="center"><div class="content">Выравнивание по центру</div></div>
-  <div id="right"><div class="content">Выравнивание по правому краю</div></div>
+  <div id="left"><div class="content">Г‚Г»Г°Г ГўГ­ГЁГўГ Г­ГЁГҐ ГЇГ® Г«ГҐГўГ®Г¬Гі ГЄГ°Г Гѕ</div></div>
+  <div id="center"><div class="content">Г‚Г»Г°Г ГўГ­ГЁГўГ Г­ГЁГҐ ГЇГ® Г¶ГҐГ­ГІГ°Гі</div></div>
+  <div id="right"><div class="content">Г‚Г»Г°Г ГўГ­ГЁГўГ Г­ГЁГҐ ГЇГ® ГЇГ°Г ГўГ®Г¬Гі ГЄГ°Г Гѕ</div></div>
  </body>
 </html>
 ============
-BI Mobile Application on iPhone - Только вертикальная ориентация (portrait)
+BI Mobile Application on iPhone - Г’Г®Г«ГјГЄГ® ГўГҐГ°ГІГЁГЄГ Г«ГјГ­Г Гї Г®Г°ГЁГҐГ­ГІГ Г¶ГЁГї (portrait)
 =============
-Чтобы на графике отображались (RESULT_MEMBERS), надо включать SHOWTOTALS = TRUE
+Г—ГІГ®ГЎГ» Г­Г  ГЈГ°Г ГґГЁГЄГҐ Г®ГІГ®ГЎГ°Г Г¦Г Г«ГЁГ±Гј (RESULT_MEMBERS), Г­Г Г¤Г® ГўГЄГ«ГѕГ·Г ГІГј SHOWTOTALS = TRUE
 ============
 Query as Infoprov
-То, что в фильтрах в области default vales - игнорируется. Фильтруется только по тому, что в области Фильтров
-Все свободные признаки участвуют в развертке при выгрузке
-Формулы поверх ограниченных показателей не вычисляются (результат = всегда 0)
+Г’Г®, Г·ГІГ® Гў ГґГЁГ«ГјГІГ°Г Гµ Гў Г®ГЎГ«Г Г±ГІГЁ default vales - ГЁГЈГ­Г®Г°ГЁГ°ГіГҐГІГ±Гї. Г”ГЁГ«ГјГІГ°ГіГҐГІГ±Гї ГІГ®Г«ГјГЄГ® ГЇГ® ГІГ®Г¬Гі, Г·ГІГ® Гў Г®ГЎГ«Г Г±ГІГЁ Г”ГЁГ«ГјГІГ°Г®Гў
+Г‚Г±ГҐ Г±ГўГ®ГЎГ®Г¤Г­Г»ГҐ ГЇГ°ГЁГ§Г­Г ГЄГЁ ГіГ·Г Г±ГІГўГіГѕГІ Гў Г°Г Г§ГўГҐГ°ГІГЄГҐ ГЇГ°ГЁ ГўГ»ГЈГ°ГіГ§ГЄГҐ
+Г”Г®Г°Г¬ГіГ«Г» ГЇГ®ГўГҐГ°Гµ Г®ГЈГ°Г Г­ГЁГ·ГҐГ­Г­Г»Гµ ГЇГ®ГЄГ Г§Г ГІГҐГ«ГҐГ© Г­ГҐ ГўГ»Г·ГЁГ±Г«ГїГѕГІГ±Гї (Г°ГҐГ§ГіГ«ГјГІГ ГІ = ГўГ±ГҐГЈГ¤Г  0)
 ============
 Design Studio
-externalKey как атрибут класса Dimension возвращает \( для ( в тексте ключа. А internalKey возвращает все правильно.
+externalKey ГЄГ ГЄ Г ГІГ°ГЁГЎГіГІ ГЄГ«Г Г±Г±Г  Dimension ГўГ®Г§ГўГ°Г Г№Г ГҐГІ \( Г¤Г«Гї ( Гў ГІГҐГЄГ±ГІГҐ ГЄГ«ГѕГ·Г . ГЂ internalKey ГўГ®Г§ГўГ°Г Г№Г ГҐГІ ГўГ±ГҐ ГЇГ°Г ГўГЁГ«ГјГ­Г®.
 ============
 
-замена цвета шрифта в подписях на графике тепловом. Меняем CSS-класс у графика, а в классе - перекрытие цвета
+Г§Г Г¬ГҐГ­Г  Г¶ГўГҐГІГ  ГёГ°ГЁГґГІГ  Гў ГЇГ®Г¤ГЇГЁГ±ГїГµ Г­Г  ГЈГ°Г ГґГЁГЄГҐ ГІГҐГЇГ«Г®ГўГ®Г¬. ГЊГҐГ­ГїГҐГ¬ CSS-ГЄГ«Г Г±Г± Гі ГЈГ°Г ГґГЁГЄГ , Г  Гў ГЄГ«Г Г±Г±ГҐ - ГЇГҐГ°ГҐГЄГ°Г»ГІГЁГҐ Г¶ГўГҐГІГ 
 
 .hgpercent g.v-morphable-label {
 	fill: blue;
@@ -892,22 +892,22 @@ externalKey как атрибут класса Dimension возвращает \( для ( в тексте ключа. А i
 =============
 // APPLICATION.alert(lv_calmonth);
 =========
-DEsign Studio Datasource не обрабатывает значения переменных Bex = #
-Если ставиль переменной несуществующее значение, то оно молча игнорируется (т.е. как будто бы фильтра нет)
+DEsign Studio Datasource Г­ГҐ Г®ГЎГ°Г ГЎГ ГІГ»ГўГ ГҐГІ Г§Г­Г Г·ГҐГ­ГЁГї ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»Гµ Bex = #
+Г…Г±Г«ГЁ Г±ГІГ ГўГЁГ«Гј ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© Г­ГҐГ±ГіГ№ГҐГ±ГІГўГіГѕГ№ГҐГҐ Г§Г­Г Г·ГҐГ­ГЁГҐ, ГІГ® Г®Г­Г® Г¬Г®Г«Г·Г  ГЁГЈГ­Г®Г°ГЁГ°ГіГҐГІГ±Гї (ГІ.ГҐ. ГЄГ ГЄ ГЎГіГ¤ГІГ® ГЎГ» ГґГЁГ«ГјГІГ°Г  Г­ГҐГІ)
 ==============
 DS_HEAT.setFilter("0CALMONTH", {
 	"low": "201601", 
 	"high": "201606"
 });
 ==============
-2 цепочки процессов. Обе выполняются последовательно из главной. Вторая выполняется после 1-ой в любом случае (зеленый или красный). Так вот, если 1-ая красная, то вторая - выполнится. Но если 1-ую исправить и продолжить, то вторая пойдет выполняться еще раз.
+2 Г¶ГҐГЇГ®Г·ГЄГЁ ГЇГ°Г®Г¶ГҐГ±Г±Г®Гў. ГЋГЎГҐ ГўГ»ГЇГ®Г«Г­ГїГѕГІГ±Гї ГЇГ®Г±Г«ГҐГ¤Г®ГўГ ГІГҐГ«ГјГ­Г® ГЁГ§ ГЈГ«Г ГўГ­Г®Г©. Г‚ГІГ®Г°Г Гї ГўГ»ГЇГ®Г«Г­ГїГҐГІГ±Гї ГЇГ®Г±Г«ГҐ 1-Г®Г© Гў Г«ГѕГЎГ®Г¬ Г±Г«ГіГ·Г ГҐ (Г§ГҐГ«ГҐГ­Г»Г© ГЁГ«ГЁ ГЄГ°Г Г±Г­Г»Г©). Г’Г ГЄ ГўГ®ГІ, ГҐГ±Г«ГЁ 1-Г Гї ГЄГ°Г Г±Г­Г Гї, ГІГ® ГўГІГ®Г°Г Гї - ГўГ»ГЇГ®Г«Г­ГЁГІГ±Гї. ГЌГ® ГҐГ±Г«ГЁ 1-ГіГѕ ГЁГ±ГЇГ°Г ГўГЁГІГј ГЁ ГЇГ°Г®Г¤Г®Г«Г¦ГЁГІГј, ГІГ® ГўГІГ®Г°Г Гї ГЇГ®Г©Г¤ГҐГІ ГўГ»ГЇГ®Г«Г­ГїГІГјГ±Гї ГҐГ№ГҐ Г°Г Г§.
 =============
-SID таблица в BW4/HANA имеет тип INTEGER
+SID ГІГ ГЎГ«ГЁГ¶Г  Гў BW4/HANA ГЁГ¬ГҐГҐГІ ГІГЁГЇ INTEGER
 The INTEGER data type stores a 32-bit signed integer. The minimum value is -2,147,483,648. The maximum value is 2,147,483,647
 
 ==================
 
-_SYS_REPO нужны полномочия WITH GRANT OPTION на все схемы, чьи объекты включены в информационные модели
+_SYS_REPO Г­ГіГ¦Г­Г» ГЇГ®Г«Г­Г®Г¬Г®Г·ГЁГї WITH GRANT OPTION Г­Г  ГўГ±ГҐ Г±ГµГҐГ¬Г», Г·ГјГЁ Г®ГЎГєГҐГЄГІГ» ГўГЄГ«ГѕГ·ГҐГ­Г» Гў ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГ®Г­Г­Г»ГҐ Г¬Г®Г¤ГҐГ«ГЁ
 
 I just wanted to add that you can dig a little deeper into the indexserver_*.trc files under the diagnosis tab if you are having some issues. I forgot that I was trying to have my calculation view reference tables in two different schemas, thus I had to have my user give _SYS_REPO access to both schemas:
 
@@ -925,16 +925,16 @@ I just wanted to add that you can dig a little deeper into the indexserver_*.trc
 With the above log, I could see that I had to grant select to "SALES_FIGURES" which was under a different schema than "REMOTE_B3Y_SALES_FIGURES".
 ======================
 
-SABAPDEMOS - пакет с кучей примеров на ABAP
-В частности, пример с параллелизацией parallel
+SABAPDEMOS - ГЇГ ГЄГҐГІ Г± ГЄГіГ·ГҐГ© ГЇГ°ГЁГ¬ГҐГ°Г®Гў Г­Г  ABAP
+Г‚ Г·Г Г±ГІГ­Г®Г±ГІГЁ, ГЇГ°ГЁГ¬ГҐГ° Г± ГЇГ Г°Г Г«Г«ГҐГ«ГЁГ§Г Г¶ГЁГҐГ© parallel
 =====================
 WebIntelligence, WebI.
-Ограничения на данные в BEx отчете в разделе "Свободные признаки" не рассматриваются WebI как фильтры
-Надо переносить в область Фильтры, тогда они в WebI будут применяться :(
+ГЋГЈГ°Г Г­ГЁГ·ГҐГ­ГЁГї Г­Г  Г¤Г Г­Г­Г»ГҐ Гў BEx Г®ГІГ·ГҐГІГҐ Гў Г°Г Г§Г¤ГҐГ«ГҐ "Г‘ГўГ®ГЎГ®Г¤Г­Г»ГҐ ГЇГ°ГЁГ§Г­Г ГЄГЁ" Г­ГҐ Г°Г Г±Г±Г¬Г ГІГ°ГЁГўГ ГѕГІГ±Гї WebI ГЄГ ГЄ ГґГЁГ«ГјГІГ°Г»
+ГЌГ Г¤Г® ГЇГҐГ°ГҐГ­Г®Г±ГЁГІГј Гў Г®ГЎГ«Г Г±ГІГј Г”ГЁГ«ГјГІГ°Г», ГІГ®ГЈГ¤Г  Г®Г­ГЁ Гў WebI ГЎГіГ¤ГіГІ ГЇГ°ГЁГ¬ГҐГ­ГїГІГјГ±Гї :(
 ====================
 ERP
-Табл.    LFC1 - по кредиторам обороты и сальдо (LNC3 -авансы по коду ОГК) 
-       KNC1 - по дебиторам обороты и сальдо (KNC3 авансы по коду ОГК)         
+Г’Г ГЎГ«.    LFC1 - ГЇГ® ГЄГ°ГҐГ¤ГЁГІГ®Г°Г Г¬ Г®ГЎГ®Г°Г®ГІГ» ГЁ Г±Г Г«ГјГ¤Г® (LNC3 -Г ГўГ Г­Г±Г» ГЇГ® ГЄГ®Г¤Гі ГЋГѓГЉ) 
+       KNC1 - ГЇГ® Г¤ГҐГЎГЁГІГ®Г°Г Г¬ Г®ГЎГ®Г°Г®ГІГ» ГЁ Г±Г Г«ГјГ¤Г® (KNC3 Г ГўГ Г­Г±Г» ГЇГ® ГЄГ®Г¤Гі ГЋГѓГЉ)         
 ===================
 Restrictions for SAP HANA smart data access
 https://launchpad.support.sap.com/#/notes/1868209/E
@@ -954,11 +954,11 @@ https://wiki.scn.sap.com/wiki/display/BI/OT-TransientQuery
 =======================
 2330582 - ABAP CDS: use V1 or V2 per annotation
 
-Starting with SAP BW 7.50 the ODP based on ABAP CDS views uses the @ObjectModel annotations to classify assoсiations. With the new annotation @Analytics.hints: 'useV1' it is possible to switch back to the logic of SAP BW 7.40.
+Starting with SAP BW 7.50 the ODP based on ABAP CDS views uses the @ObjectModel annotations to classify assoГ±iations. With the new annotation @Analytics.hints: 'useV1' it is possible to switch back to the logic of SAP BW 7.40.
 =============
-DEVACCESS - ТАБЛИЦА с ключами разработчика
+DEVACCESS - Г’ГЂГЃГ‹Г€Г–ГЂ Г± ГЄГ«ГѕГ·Г Г¬ГЁ Г°Г Г§Г°Г ГЎГ®ГІГ·ГЁГЄГ 
 ============
-удалять пробелы, табуляции
+ГіГ¤Г Г«ГїГІГј ГЇГ°Г®ГЎГҐГ«Г», ГІГ ГЎГіГ«ГїГ¶ГЁГЁ
             REPLACE_REGEXPR( '\s.+' IN
                CASE WHEN SUBSTRING(RT_PROMO,1,10) IN ( 'SR10_SECON','SR10_ROUND' ) THEN ' '
                     WHEN SUBSTRING(RT_PROMO,1,5) = 'SR10_' THEN SUBSTRING( RT_PROMO, 6)
@@ -973,13 +973,13 @@ ASDO and HCPR are new infoproviders that can only be modeled in BW Modeling Tool
 the user interface is different from traditional RSA1. You mignt have some difficulty to find some settings.
 It is not possible to set navigation attributes in aDSO.  It is only possible to set navigation attributes in the output of a HCPR.
 
-в HCPR, в признаке с нав.атр. используются нав.атр этого признака. А не других, которые могут быть соединены с этим.
+Гў HCPR, Гў ГЇГ°ГЁГ§Г­Г ГЄГҐ Г± Г­Г Гў.Г ГІГ°. ГЁГ±ГЇГ®Г«ГјГ§ГіГѕГІГ±Гї Г­Г Гў.Г ГІГ° ГЅГІГ®ГЈГ® ГЇГ°ГЁГ§Г­Г ГЄГ . ГЂ Г­ГҐ Г¤Г°ГіГЈГЁГµ, ГЄГ®ГІГ®Г°Г»ГҐ Г¬Г®ГЈГіГІ ГЎГ»ГІГј Г±Г®ГҐГ¤ГЁГ­ГҐГ­Г» Г± ГЅГІГЁГ¬.
 
 =================
 BW751SP00 = BW750SP05
 2404122 - Check for BW Upgrade to BW4HANA
 =================
-BW/4HANA Starter Add-On. Об этом компоненте, его возможностях и ограничениях см в ноте 
+BW/4HANA Starter Add-On. ГЋГЎ ГЅГІГ®Г¬ ГЄГ®Г¬ГЇГ®Г­ГҐГ­ГІГҐ, ГҐГЈГ® ГўГ®Г§Г¬Г®Г¦Г­Г®Г±ГІГїГµ ГЁ Г®ГЈГ°Г Г­ГЁГ·ГҐГ­ГЁГїГµ Г±Г¬ Гў Г­Г®ГІГҐ 
 2189708 - SAP BW/4HANA Add-On Handling and Usage
 2246699 - SAP BW/4HANA Starter Add-On - Pre-Requisites/Installation/De-Installation/Update.
 =================
@@ -989,17 +989,17 @@ Next navigation step Administration
   End of the navigation path. 
 This opens the transaction for the administration of external SAP HANA views.
 
-RS2HANA_VIEW - генерировать роль и др. настройки для доступа к данным BW через модели в HANA
-RS2HANA_GEN - генерация (выравнивание) присвоений полномочий между BW-омоделями, HANA-омоделями и HANA-и BW-пользователями
+RS2HANA_VIEW - ГЈГҐГ­ГҐГ°ГЁГ°Г®ГўГ ГІГј Г°Г®Г«Гј ГЁ Г¤Г°. Г­Г Г±ГІГ°Г®Г©ГЄГЁ Г¤Г«Гї Г¤Г®Г±ГІГіГЇГ  ГЄ Г¤Г Г­Г­Г»Г¬ BW Г·ГҐГ°ГҐГ§ Г¬Г®Г¤ГҐГ«ГЁ Гў HANA
+RS2HANA_GEN - ГЈГҐГ­ГҐГ°Г Г¶ГЁГї (ГўГ»Г°Г ГўГ­ГЁГўГ Г­ГЁГҐ) ГЇГ°ГЁГ±ГўГ®ГҐГ­ГЁГ© ГЇГ®Г«Г­Г®Г¬Г®Г·ГЁГ© Г¬ГҐГ¦Г¤Гі BW-Г®Г¬Г®Г¤ГҐГ«ГїГ¬ГЁ, HANA-Г®Г¬Г®Г¤ГҐГ«ГїГ¬ГЁ ГЁ HANA-ГЁ BW-ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«ГїГ¬ГЁ
 1927767 - Mass DBMS User Management
 
-У сгенерированного view надо поставить Classical Analytic Priviledge (иначе ошибка "нет авторизации", 
-даже если есть роль MODELING с правами на все нужные схемы и на все объект _SYS_BI_CP_ALL
-При переактивации модели в BW свойство устанавливается в SQL Analytic Priviledge, так что надо повнимательней
+Г“ Г±ГЈГҐГ­ГҐГ°ГЁГ°Г®ГўГ Г­Г­Г®ГЈГ® view Г­Г Г¤Г® ГЇГ®Г±ГІГ ГўГЁГІГј Classical Analytic Priviledge (ГЁГ­Г Г·ГҐ Г®ГёГЁГЎГЄГ  "Г­ГҐГІ Г ГўГІГ®Г°ГЁГ§Г Г¶ГЁГЁ", 
+Г¤Г Г¦ГҐ ГҐГ±Г«ГЁ ГҐГ±ГІГј Г°Г®Г«Гј MODELING Г± ГЇГ°Г ГўГ Г¬ГЁ Г­Г  ГўГ±ГҐ Г­ГіГ¦Г­Г»ГҐ Г±ГµГҐГ¬Г» ГЁ Г­Г  ГўГ±ГҐ Г®ГЎГєГҐГЄГІ _SYS_BI_CP_ALL
+ГЏГ°ГЁ ГЇГҐГ°ГҐГ ГЄГІГЁГўГ Г¶ГЁГЁ Г¬Г®Г¤ГҐГ«ГЁ Гў BW Г±ГўГ®Г©Г±ГІГўГ® ГіГ±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГІГ±Гї Гў SQL Analytic Priviledge, ГІГ ГЄ Г·ГІГ® Г­Г Г¤Г® ГЇГ®ГўГ­ГЁГ¬Г ГІГҐГ«ГјГ­ГҐГ©
 
-При снятии галочки HANA-model в инфообъекте/ADSO, при переактивации автоматически удаляются соотв. HANA-Объекты сами и из роли
+ГЏГ°ГЁ Г±Г­ГїГІГЁГЁ ГЈГ Г«Г®Г·ГЄГЁ HANA-model Гў ГЁГ­ГґГ®Г®ГЎГєГҐГЄГІГҐ/ADSO, ГЇГ°ГЁ ГЇГҐГ°ГҐГ ГЄГІГЁГўГ Г¶ГЁГЁ Г ГўГІГ®Г¬Г ГІГЁГ·ГҐГ±ГЄГЁ ГіГ¤Г Г«ГїГѕГІГ±Гї Г±Г®Г®ГІГў. HANA-ГЋГЎГєГҐГЄГІГ» Г±Г Г¬ГЁ ГЁ ГЁГ§ Г°Г®Г«ГЁ
 
-При создании аналитической привилегии указывается ее тип: classic или SQL.
+ГЏГ°ГЁ Г±Г®Г§Г¤Г Г­ГЁГЁ Г Г­Г Г«ГЁГІГЁГ·ГҐГ±ГЄГ®Г© ГЇГ°ГЁГўГЁГ«ГҐГЈГЁГЁ ГіГЄГ Г§Г»ГўГ ГҐГІГ±Гї ГҐГҐ ГІГЁГЇ: classic ГЁГ«ГЁ SQL.
 
 Analytic Privileges
 https://help.sap.com/saphelp_hanaplatform/helpdata/en/db/08ea0cbb571014a386f851122958b2/content.htm?frameset=/en/1b/f69f1dfcc6408783bce441a758f571/frameset.htm&current_toc=/en/34/29fc63a1de4cd6876ea211dc86ee54/plain.htm&node_id=417&show_children=false
@@ -1033,7 +1033,7 @@ https://websmp106.sap-ag.de/~sapidp/012002523100012419282015E/frameset.htm?be49e
 ================
 Assign a role with authorization object S_RS_AUTH, field BIAUTH=0CDSALL to the endusers who should access any smart business app.
 ================
-report RS2HANA_AUTH_RUN - Для добавления в цепочку и периодического выравнивания полномочий анализа в BW и в HANA
+report RS2HANA_AUTH_RUN - Г„Г«Гї Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГї Гў Г¶ГҐГЇГ®Г·ГЄГі ГЁ ГЇГҐГ°ГЁГ®Г¤ГЁГ·ГҐГ±ГЄГ®ГЈГ® ГўГ»Г°Г ГўГ­ГЁГўГ Г­ГЁГї ГЇГ®Г«Г­Г®Г¬Г®Г·ГЁГ© Г Г­Г Г«ГЁГ§Г  Гў BW ГЁ Гў HANA
 ================
 Smart Business App Config
 https://blogs.sap.com/2017/02/03/fiori-analytical-app-configuration-steps-for-beginners/
@@ -1046,17 +1046,17 @@ https://wiki.scn.sap.com/wiki/display/BI/BW2HANA+authorization+generation%3A+Exa
 
 Checking the analytic privilege in more detail we can see that the privilege is designed as "procedure" which you can find in the schema "_SYS_BIC":
 
-как отключить?
+ГЄГ ГЄ Г®ГІГЄГ«ГѕГ·ГЁГІГј?
 
-деактивировать объект полномочий анализа
-удалить свойство релевантен для авторизации
-переактивировать признак и инфопровайдеры с ним (модели в HANA)
+Г¤ГҐГ ГЄГІГЁГўГЁГ°Г®ГўГ ГІГј Г®ГЎГєГҐГЄГІ ГЇГ®Г«Г­Г®Г¬Г®Г·ГЁГ© Г Г­Г Г«ГЁГ§Г 
+ГіГ¤Г Г«ГЁГІГј Г±ГўГ®Г©Г±ГІГўГ® Г°ГҐГ«ГҐГўГ Г­ГІГҐГ­ Г¤Г«Гї Г ГўГІГ®Г°ГЁГ§Г Г¶ГЁГЁ
+ГЇГҐГ°ГҐГ ГЄГІГЁГўГЁГ°Г®ГўГ ГІГј ГЇГ°ГЁГ§Г­Г ГЄ ГЁ ГЁГ­ГґГ®ГЇГ°Г®ГўГ Г©Г¤ГҐГ°Г» Г± Г­ГЁГ¬ (Г¬Г®Г¤ГҐГ«ГЁ Гў HANA)
 RS2HANA_GEN
 =================
 2103008 - HANA System cannot be attached to BW Modeling Tools due to network configuration
 =================
 SCTS_HTA - SAP HANA Transport for ABAP.
-Включение объектов контента в транспортный запрос
+Г‚ГЄГ«ГѕГ·ГҐГ­ГЁГҐ Г®ГЎГєГҐГЄГІГ®Гў ГЄГ®Г­ГІГҐГ­ГІГ  Гў ГІГ°Г Г­Г±ГЇГ®Г°ГІГ­Г»Г© Г§Г ГЇГ°Г®Г±
 =================
 SADL (Service Adaptation Description Language) is an ABAP technology that enables the consumption of entity relationship-like ABAP data models in various scenarios with a common development experience based on a model-driven approach.
 Therefore, SADL enables fast read access to data for scenarios on mobile and desktop applications based on SAP HANA using query push-down.
@@ -1070,12 +1070,12 @@ Evaluation Runtime (Engine):
 Analytic Manager: Uses associated view as DIMENSION view for the annotated field.
 SADL: Derives a default value help support from the foreign key relationship.
 
-То есть для доступа через SADL это аннотация включает F4-support. Для Analysis - обозначение изменения
+Г’Г® ГҐГ±ГІГј Г¤Г«Гї Г¤Г®Г±ГІГіГЇГ  Г·ГҐГ°ГҐГ§ SADL ГЅГІГ® Г Г­Г­Г®ГІГ Г¶ГЁГї ГўГЄГ«ГѕГ·Г ГҐГІ F4-support. Г„Г«Гї Analysis - Г®ГЎГ®Г§Г­Г Г·ГҐГ­ГЁГҐ ГЁГ§Г¬ГҐГ­ГҐГ­ГЁГї
 ===========================
 RUTDDLSSHOW2
 check CDS report in SAP GUI
 ==============
-@Analytics.query: true - генерирует транзиентный провайдер => можно увидеть в Analysis. + Генерирует OData сервис. В HANA Studio появляется кнопочка напротив аннотации. По ней можно перейти в сервси.
+@Analytics.query: true - ГЈГҐГ­ГҐГ°ГЁГ°ГіГҐГІ ГІГ°Г Г­Г§ГЁГҐГ­ГІГ­Г»Г© ГЇГ°Г®ГўГ Г©Г¤ГҐГ° => Г¬Г®Г¦Г­Г® ГіГўГЁГ¤ГҐГІГј Гў Analysis. + ГѓГҐГ­ГҐГ°ГЁГ°ГіГҐГІ OData Г±ГҐГ°ГўГЁГ±. Г‚ HANA Studio ГЇГ®ГїГўГ«ГїГҐГІГ±Гї ГЄГ­Г®ГЇГ®Г·ГЄГ  Г­Г ГЇГ°Г®ГІГЁГў Г Г­Г­Г®ГІГ Г¶ГЁГЁ. ГЏГ® Г­ГҐГ© Г¬Г®Г¦Г­Г® ГЇГҐГ°ГҐГ©ГІГЁ Гў Г±ГҐГ°ГўГ±ГЁ.
 
 go to transaction /IWFND/MAINT_SERVICE
 Click on the 'Add Service' button at the top of the page
@@ -1083,7 +1083,7 @@ Search for service (don't forget to choose right source system (not local))
 select service and add then. You will be prompted to add package to the service several times
 (prerequisites: executing report for autosetup OData (SE38: EQ_RS_AUTOSETUP) under DDIC user
 
-@VDM.Viewtype #CONSUMPTION. Позволяет делать модель только поверх других view!!! Поверх таблицы не получится сделать. Для порядка.
+@VDM.Viewtype #CONSUMPTION. ГЏГ®Г§ГўГ®Г«ГїГҐГІ Г¤ГҐГ«Г ГІГј Г¬Г®Г¤ГҐГ«Гј ГІГ®Г«ГјГЄГ® ГЇГ®ГўГҐГ°Гµ Г¤Г°ГіГЈГЁГµ view!!! ГЏГ®ГўГҐГ°Гµ ГІГ ГЎГ«ГЁГ¶Г» Г­ГҐ ГЇГ®Г«ГіГ·ГЁГІГ±Гї Г±Г¤ГҐГ«Г ГІГј. Г„Г«Гї ГЇГ®Г°ГїГ¤ГЄГ .
 
 2244649 - SAP Netweaver Gateway Odata service transport FAQ
 
@@ -1095,29 +1095,29 @@ Tcodes: CG3Y and CG3Z
 download and upload file to|from appserver ABAP
 ===============
 
-View browser - можно выгрузить CDS-views в Excel вместе с компонентами
+View browser - Г¬Г®Г¦Г­Г® ГўГ»ГЈГ°ГіГ§ГЁГІГј CDS-views Гў Excel ГўГ¬ГҐГ±ГІГҐ Г± ГЄГ®Г¬ГЇГ®Г­ГҐГ­ГІГ Г¬ГЁ
 ===============
 Fiori
-Добавлять каталог в роль - и можно видеть плитки и выбирать их в группы на fiori (любые группы)
-Добавлять группу в роль - сразу добавляется группа в меню на страницу
+Г„Г®ГЎГ ГўГ«ГїГІГј ГЄГ ГІГ Г«Г®ГЈ Гў Г°Г®Г«Гј - ГЁ Г¬Г®Г¦Г­Г® ГўГЁГ¤ГҐГІГј ГЇГ«ГЁГІГЄГЁ ГЁ ГўГ»ГЎГЁГ°Г ГІГј ГЁГµ Гў ГЈГ°ГіГЇГЇГ» Г­Г  fiori (Г«ГѕГЎГ»ГҐ ГЈГ°ГіГЇГЇГ»)
+Г„Г®ГЎГ ГўГ«ГїГІГј ГЈГ°ГіГЇГЇГі Гў Г°Г®Г«Гј - Г±Г°Г Г§Гі Г¤Г®ГЎГ ГўГ«ГїГҐГІГ±Гї ГЈГ°ГіГЇГЇГ  Гў Г¬ГҐГ­Гѕ Г­Г  Г±ГІГ°Г Г­ГЁГ¶Гі
 2383335 - Cannot Add KPI Tiles to Launchpad
 
 Catalog
 A catalog is a set of apps you want to make available for one role. Depending on the role and the catalogs assigned to the role, users can browse through the catalogs and choose the apps that they want to display on the entry page of the SAP Fiori launchpad
 
 Group
-A group is a subset of apps from one or more catalogs. Which tiles are displayed on a user’s entry page depends on the groups assigned to the user’s role. In addition, the user can personalize the entry page by adding or removing apps to pre-delivered groups or self-defined groups.
+A group is a subset of apps from one or more catalogs. Which tiles are displayed on a userвЂ™s entry page depends on the groups assigned to the userвЂ™s role. In addition, the user can personalize the entry page by adding or removing apps to pre-delivered groups or self-defined groups.
 
 Roles (PFCG): Provides access to the assigned groups and catalogs.
 
 =============
 
-CDS - это принцип SAP Query с визуализацией в BW
+CDS - ГЅГІГ® ГЇГ°ГЁГ­Г¶ГЁГЇ SAP Query Г± ГўГЁГ§ГіГ Г«ГЁГ§Г Г¶ГЁГҐГ© Гў BW
 =============
-Мандант в CDS
+ГЊГ Г­Г¤Г Г­ГІ Гў CDS
 https://blogs.sap.com/2015/11/25/abap-news-for-release-750-environment-information-in-abap-cds/
 (as 750)
-@AbapCatalog.sqlViewName: ‘DEMO_CDS_SESSVAR’ 
+@AbapCatalog.sqlViewName: вЂDEMO_CDS_SESSVARвЂ™ 
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 define view demo_cds_session_variables
 as
@@ -1128,9 +1128,9 @@ select
        $session.client          as system_client,
        $session.system_language as system_language }
 ==============
-*читаем фильтр из DTP (filter)
-*если в настройках переменной Z_BB_LFL_NOT_USE_COND = 'X' нет,
-*значит используем фильтр
+*Г·ГЁГІГ ГҐГ¬ ГґГЁГ«ГјГІГ° ГЁГ§ DTP (filter)
+*ГҐГ±Г«ГЁ Гў Г­Г Г±ГІГ°Г®Г©ГЄГ Гµ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© Z_BB_LFL_NOT_USE_COND = 'X' Г­ГҐГІ,
+*Г§Г­Г Г·ГЁГІ ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГ¬ ГґГЁГ«ГјГІГ°
 if l_tvarv <> 'X'.
   lt_dtp_range = p_r_request->GET_TH_RANGE( ).
   clear r_calday.
@@ -1153,11 +1153,11 @@ if l_tvarv <> 'X'.
     endcase.
   endloop.
 ==============
-St06 - просмотр данных по серверу приложений ABAP
+St06 - ГЇГ°Г®Г±Г¬Г®ГІГ° Г¤Г Г­Г­Г»Гµ ГЇГ® Г±ГҐГ°ГўГҐГ°Гі ГЇГ°ГЁГ«Г®Г¦ГҐГ­ГЁГ© ABAP
 =============
-FM DB_DBUSER показывает db user сервера приложений
+FM DB_DBUSER ГЇГ®ГЄГ Г§Г»ГўГ ГҐГІ db user Г±ГҐГ°ГўГҐГ°Г  ГЇГ°ГЁГ«Г®Г¦ГҐГ­ГЁГ©
 =============
-STC01 запуск task list-ов  SAP_BW4_SETUP_SIMPLE
+STC01 Г§Г ГЇГіГ±ГЄ task list-Г®Гў  SAP_BW4_SETUP_SIMPLE
 2417445 - BW/4HANA: UNCAUGHT_EXCEPTION due to uninstalled technical content
 
 Table RSTCO_OBJ_ACT Activated objects (techn. content)
@@ -1305,8 +1305,8 @@ Use ABAP Program ABAP Program RSDG_TRFN_ACTIVATE
 reactivate activate DSO
 rsdg_odso_activate
 ======================
-не работает, если в кубе год - годмесяц - дата, и заполнены год и год-месяц, а дата - пустая.
-херня
+Г­ГҐ Г°Г ГЎГ®ГІГ ГҐГІ, ГҐГ±Г«ГЁ Гў ГЄГіГЎГҐ ГЈГ®Г¤ - ГЈГ®Г¤Г¬ГҐГ±ГїГ¶ - Г¤Г ГІГ , ГЁ Г§Г ГЇГ®Г«Г­ГҐГ­Г» ГЈГ®Г¤ ГЁ ГЈГ®Г¤-Г¬ГҐГ±ГїГ¶, Г  Г¤Г ГІГ  - ГЇГіГ±ГІГ Гї.
+ГµГҐГ°Г­Гї
 1772036 - Inconsistent Time Dimensions
 2237679 - Time Charateristics and Current Member Variables
 CURRENT_MEMBER
@@ -1315,9 +1315,9 @@ https://wiki.scn.sap.com/wiki/display/BI/How+to+Create+a+Current+Member+Variable
 1717880 - Virtual Key Figures & Characteristics
 Note 1488910 introduces the new kernel-based BADI RSROA_OLAP_BADI which reduces the runtime for the BADI considerably. This reduction in runtime is only achieved if you create a new implementation of the BADI RSROA_OLAP_BADI, the classic BADI (and corresponding implementations)remains unchanged. Please see the sample code of the class CL_EXM_RSROA_OLAP_BADI. There you will notice that new methods have been introduced as e.g. COMPUTE_TABLE. This method is called once per PartProvider and DataManager-call (data package -> structure C_T_DATA) and gives you the possibility to process the entire data package. If you don't need this flexibility you can use the method COMPUTE_SINGLE which is called for each data record of C_T_DATA (as for the classic BADI).
 ==============================
-Прямая routine:
-из FISCPER делают 0CALMONTH
-а вот и обратная:
+ГЏГ°ГїГ¬Г Гї routine:
+ГЁГ§ FISCPER Г¤ГҐГ«Г ГѕГІ 0CALMONTH
+Г  ГўГ®ГІ ГЁ Г®ГЎГ°Г ГІГ­Г Гї:
   METHOD inverse_end_routine.
 
 *   IMPORTING
@@ -1435,7 +1435,7 @@ BW transformation monitor ABAP
           msgty = 'E'
           msgid = '0000'
           msgno = '001'
-          msgv1 = 'Исходные фактуры не найдены'
+          msgv1 = 'Г€Г±ГµГ®Г¤Г­Г»ГҐ ГґГ ГЄГІГіГ°Г» Г­ГҐ Г­Г Г©Г¤ГҐГ­Г»'
         ) TO MONITOR.
         RAISE EXCEPTION TYPE CX_RSROUT_ABORT.
 =======================
@@ -1447,7 +1447,7 @@ TCode STC01: SAP_BW_SETUP_INITIAL_S4HANA
 2356498 - BW task list does not start job BI_WRITE_PROT_TO_APPLLOG
 2303900 - Latest Information about BW Setup in S/4HANA Systems
 2362807 - SAP HANA authorizations for BW metadata search/no results in search/input help for BW modeling tools
-2289865 - Configuration steps for S/4 HANA Analytics (выполнить последовательность шагов)
+2289865 - Configuration steps for S/4 HANA Analytics (ГўГ»ГЇГ®Г«Г­ГЁГІГј ГЇГ®Г±Г«ГҐГ¤Г®ГўГ ГІГҐГ«ГјГ­Г®Г±ГІГј ГёГ ГЈГ®Гў)
 2289865 - Configuration steps for S/4 HANA Analytics
 
 ========================
@@ -1458,7 +1458,7 @@ https://help.sap.com/http.svc/rc/abapdocu_750_index_htm/7.50/en-US/abencds_annot
 1976487 - Information about adjusting customer-specific programs to the simplified data model in SAP Simple Finance
 2185026 - Compatibility views COSP, COSS, COEP, COVP: How do you optimize their use?
 ======================
-Хинты перечислять через запятую!!
+Г•ГЁГ­ГІГ» ГЇГҐГ°ГҐГ·ГЁГ±Г«ГїГІГј Г·ГҐГ°ГҐГ§ Г§Г ГЇГїГІГіГѕ!!
 
  SELECT t1.ref_doc_no, "/BIC/CARD12" AS card12                ,"/BIC/CARDKIND" AS cardkind                ,"/BIC/CRECNUM" AS crecnum                
   ,time                ,material                ,debitor                ,calday                ,"/BIC/ZRT_PREDR" AS zrt_predr  
@@ -1546,7 +1546,7 @@ application privilege: com.acme.myapps.debugger::Execute;
 =====================
 Unnamed SQL Script block
 http://help-legacy.sap.com/saphelp_hanaplatform/helpdata/en/52/103853351841f6a1e87f40b2686da9/content.htm
-Можно без создания процедуры, но некоторые hints Не работают внутри процедуры
+ГЊГ®Г¦Г­Г® ГЎГҐГ§ Г±Г®Г§Г¤Г Г­ГЁГї ГЇГ°Г®Г¶ГҐГ¤ГіГ°Г», Г­Г® Г­ГҐГЄГ®ГІГ®Г°Г»ГҐ hints ГЌГҐ Г°Г ГЎГ®ГІГ ГѕГІ ГўГ­ГіГІГ°ГЁ ГЇГ°Г®Г¶ГҐГ¤ГіГ°Г»
 do begin
        tab_1 =
              SELECT t2.ref_doc_no
@@ -1569,7 +1569,7 @@ do begin
        )
        AND t1.rt_paydir = '1' 
        WITH HINT( CS_ITAB_IN_SUBQUERY  );
-     SELECT * FROM :tab_2; // вывод на экран
+     SELECT * FROM :tab_2; // ГўГ»ГўГ®Г¤ Г­Г  ГЅГЄГ°Г Г­
 end;       
 ==================
 CDS assisiations goto restrictions
@@ -1578,13 +1578,13 @@ https://help.sap.com/http.svc/rc/abapdocu_751_index_htm/7.51/en-US/abenopen_sql_
 ABAP RSARCH_DATE_CONVERT
 FM transforms date to cal* (calquater,...)
 ===================
-В метод "заходит" только если переменная типа user-exit!!!
+Г‚ Г¬ГҐГІГ®Г¤ "Г§Г ГµГ®Г¤ГЁГІ" ГІГ®Г«ГјГЄГ® ГҐГ±Г«ГЁ ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г Гї ГІГЁГЇГ  user-exit!!!
 SE19 -> RSROA_VARIABLES_EXIT (enhancement spot)
-Since I_STEP = 3 is not called by info object, an implementation for all I_STEP 3 validations can be created with filter value OBJNM = ‘’
+Since I_STEP = 3 is not called by info object, an implementation for all I_STEP 3 validations can be created with filter value OBJNM = вЂвЂ™
 
 https://blogs.sap.com/2014/01/20/how-to-create-variable-exits-through-standard-enhancement-spot-rsroavariablesexit/
 
-Table RSZGLOBV - переменные
+Table RSZGLOBV - ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ
 ==============================
 TRY.
  ls_output-use_live_y =  12 * lt_asset_afab[ comp_code = <fs_empos>-comp_code asset_main = <fs_empos>-asset_main asset = <fs_empos>-asset ]-use_live_y.
@@ -1607,7 +1607,7 @@ DATA(itab_multi_comp) =
               ).
 =====================
 1942767 - transport not successfully: Error when activating element
-Когда непонятно, что надо переактивировать в Bex
+ГЉГ®ГЈГ¤Г  Г­ГҐГЇГ®Г­ГїГІГ­Г®, Г·ГІГ® Г­Г Г¤Г® ГЇГҐГ°ГҐГ ГЄГІГЁГўГЁГ°Г®ГўГ ГІГј Гў Bex
 ========================
 Generate huge dataset: put data in SALESx and execute the query:
 insert into SALES
@@ -1619,7 +1619,7 @@ select
   SALES3.TARGET,
   from SALES1, SALES2, SALES3
 ==========================
-более компактная форма представления аннотаций CDS
+ГЎГ®Г«ГҐГҐ ГЄГ®Г¬ГЇГ ГЄГІГ­Г Гї ГґГ®Г°Г¬Г  ГЇГ°ГҐГ¤Г±ГІГ ГўГ«ГҐГ­ГЁГї Г Г­Г­Г®ГІГ Г¶ГЁГ© CDS
 @Analytics:{dataCategory: #CUBE, dataExtraction.enabled: true }
 =========================
 
@@ -1629,7 +1629,7 @@ select
   @EndUserText.label: 'Utilization Rate'
   0 as UtilizationRat
 
-определение формулы в CDS через аннотацию!!!
+Г®ГЇГ°ГҐГ¤ГҐГ«ГҐГ­ГЁГҐ ГґГ®Г°Г¬ГіГ«Г» Гў CDS Г·ГҐГ°ГҐГ§ Г Г­Г­Г®ГІГ Г¶ГЁГѕ!!!
 =================
   with 
   fact_tab  as (select * from EDW.DAILY_STORE_ITEM),
@@ -1715,8 +1715,8 @@ and routine...
     lv_d = lv_c8.
     CONCATENATE lv_d+0(6) '01' INTO lv_d.
     lv_d = lv_d - 1.
-    lv_hd = lv_d. " последнее число предыдущего месяца
-    lv_ld = lv_hd - 360. " минус 12 мес.
+    lv_hd = lv_d. " ГЇГ®Г±Г«ГҐГ¤Г­ГҐГҐ Г·ГЁГ±Г«Г® ГЇГ°ГҐГ¤Г»Г¤ГіГ№ГҐГЈГ® Г¬ГҐГ±ГїГ¶Г 
+    lv_ld = lv_hd - 360. " Г¬ГЁГ­ГіГ± 12 Г¬ГҐГ±.
     CONCATENATE lv_ld+0(6) '01' INTO lv_ld.
     r_s_range-fieldname = 'PSTNG_DATE'.
     r_s_range-iobjnm = 'PSTNG_DATE'.
@@ -1727,20 +1727,20 @@ and routine...
   ENDIF.
   ENDMETHOD.
 ==============================
-Если не видно списка соединений в Analysis, необходимо через контекстное меню нажать пункт refresh. На кнопке refresh нет!!!
+Г…Г±Г«ГЁ Г­ГҐ ГўГЁГ¤Г­Г® Г±ГЇГЁГ±ГЄГ  Г±Г®ГҐГ¤ГЁГ­ГҐГ­ГЁГ© Гў Analysis, Г­ГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® Г·ГҐГ°ГҐГ§ ГЄГ®Г­ГІГҐГЄГ±ГІГ­Г®ГҐ Г¬ГҐГ­Гѕ Г­Г Г¦Г ГІГј ГЇГіГ­ГЄГІ refresh. ГЌГ  ГЄГ­Г®ГЇГЄГҐ refresh Г­ГҐГІ!!!
 2518955 - Analysis for Office is not showing the BW systems from SAPUILandscape.xml file
-В analysis 2.5 настойки файлов конфигурации вынесены в интерфейс!!!!
+Г‚ analysis 2.5 Г­Г Г±ГІГ®Г©ГЄГЁ ГґГ Г©Г«Г®Гў ГЄГ®Г­ГґГЁГЈГіГ°Г Г¶ГЁГЁ ГўГ»Г­ГҐГ±ГҐГ­Г» Гў ГЁГ­ГІГҐГ°ГґГҐГ©Г±!!!!
 =========================
 M_SESSION_CONTEXT System View
 Specifies the session variables for each connection.
-e.g. CLIENT и т.д.
+e.g. CLIENT ГЁ ГІ.Г¤.
 ===================
 RSU5_SAPI_BADI
 BADI extractor extension
 
   method if_ex_rsu5_sapi_badi~data_transform.
     types:
-     tt_bwe_equi type table of bwe_equi. " структура экстракции
+     tt_bwe_equi type table of bwe_equi. " Г±ГІГ°ГіГЄГІГіГ°Г  ГЅГЄГ±ГІГ°Г ГЄГ¶ГЁГЁ
 
     field-symbols: <lt_data> type tt_bwe_equi,
                    <ls_data> type bwe_equi.
@@ -1762,14 +1762,14 @@ FM to set up concrete Assets for extraction
 
 https://wiki.scn.sap.com/wiki/display/ERPFI/Overview+BW+Delta+Extraction
 =====================
-@3U@ в имени роди показывает знак STOP!!
+@3U@ Гў ГЁГ¬ГҐГ­ГЁ Г°Г®Г¤ГЁ ГЇГ®ГЄГ Г§Г»ГўГ ГҐГІ Г§Г­Г ГЄ STOP!!
 =================
-RSDIOBJT - таблица текстов инфообъектов
+RSDIOBJT - ГІГ ГЎГ«ГЁГ¶Г  ГІГҐГЄГ±ГІГ®Гў ГЁГ­ГґГ®Г®ГЎГєГҐГЄГІГ®Гў
 =================
 @ClientHandling.algorithm: #SESSION_VARIABLE
 https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abencds_client_handling.htm
 ====================
-RSRTS_ODP_DIS - просмотр CDS (консистентность)
+RSRTS_ODP_DIS - ГЇГ°Г®Г±Г¬Г®ГІГ° CDS (ГЄГ®Г­Г±ГЁГ±ГІГҐГ­ГІГ­Г®Г±ГІГј)
 
 Useful blog about CDS
 
@@ -1777,26 +1777,26 @@ https://blogs.sap.com/2016/03/25/my-cds-view-self-study-tutorial-part-6-consume-
 =====================
 16 - maximum length of CDS sqlview name
 ====================
-подход, когда вместо несольких имплементаций одной BADI создается одна имплементация - класс, а в нем динамически определяется имя вызываемого класса-метода и вызывается,
-называется Class Factory
+ГЇГ®Г¤ГµГ®Г¤, ГЄГ®ГЈГ¤Г  ГўГ¬ГҐГ±ГІГ® Г­ГҐГ±Г®Г«ГјГЄГЁГµ ГЁГ¬ГЇГ«ГҐГ¬ГҐГ­ГІГ Г¶ГЁГ© Г®Г¤Г­Г®Г© BADI Г±Г®Г§Г¤Г ГҐГІГ±Гї Г®Г¤Г­Г  ГЁГ¬ГЇГ«ГҐГ¬ГҐГ­ГІГ Г¶ГЁГї - ГЄГ«Г Г±Г±, Г  Гў Г­ГҐГ¬ Г¤ГЁГ­Г Г¬ГЁГ·ГҐГ±ГЄГЁ Г®ГЇГ°ГҐГ¤ГҐГ«ГїГҐГІГ±Гї ГЁГ¬Гї ГўГ»Г§Г»ГўГ ГҐГ¬Г®ГЈГ® ГЄГ«Г Г±Г±Г -Г¬ГҐГІГ®Г¤Г  ГЁ ГўГ»Г§Г»ГўГ ГҐГІГ±Гї,
+Г­Г Г§Г»ГўГ ГҐГІГ±Гї Class Factory
 ====================
-@Endusertext.label для параметров CDS работает только на CDS-QUERY
-В качестве типов параметров можно определять любые типы, определенные в словаре ABAP. Встроенные в ABAP Типы определяются как abap.<имя типа>
+@Endusertext.label Г¤Г«Гї ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў CDS Г°Г ГЎГ®ГІГ ГҐГІ ГІГ®Г«ГјГЄГ® Г­Г  CDS-QUERY
+Г‚ ГЄГ Г·ГҐГ±ГІГўГҐ ГІГЁГЇГ®Гў ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Г¬Г®Г¦Г­Г® Г®ГЇГ°ГҐГ¤ГҐГ«ГїГІГј Г«ГѕГЎГ»ГҐ ГІГЁГЇГ», Г®ГЇГ°ГҐГ¤ГҐГ«ГҐГ­Г­Г»ГҐ Гў Г±Г«Г®ГўГ Г°ГҐ ABAP. Г‚Г±ГІГ°Г®ГҐГ­Г­Г»ГҐ Гў ABAP Г’ГЁГЇГ» Г®ГЇГ°ГҐГ¤ГҐГ«ГїГѕГІГ±Гї ГЄГ ГЄ abap.<ГЁГ¬Гї ГІГЁГЇГ >
 ====================
 ABAPCDS
-контекстное меню на SQLView в редакторе - и можно выбрать переход к SQL-выражению CREATE VIEW..
+ГЄГ®Г­ГІГҐГЄГ±ГІГ­Г®ГҐ Г¬ГҐГ­Гѕ Г­Г  SQLView Гў Г°ГҐГ¤Г ГЄГІГ®Г°ГҐ - ГЁ Г¬Г®Г¦Г­Г® ГўГ»ГЎГ°Г ГІГј ГЇГҐГ°ГҐГµГ®Г¤ ГЄ SQL-ГўГ»Г°Г Г¦ГҐГ­ГЁГѕ CREATE VIEW..
 ======================
-You can use both solutions, but I still don't see the specific uses case for ACDOCP other than possibly Consolidations.  For a planning scenario with any significant complexity you would want to breakout the R01 approach to potentially multiple data models for design optimization purposes (i.e.: and R01a approach for Revenue Planning and a R01b for CAPEX solution). 
+You can use both solutions, but I still don't see the specific uses case for ACDOCP other than possibly Consolidations.В В For a planning scenario with any significant complexity you would want to breakout the R01 approach to potentially multiple data models for design optimization purposes (i.e.: and R01a approach for Revenue Planning and a R01b for CAPEX solution). 
 ==================
 2519240 new fiedls in ACDOCP for planning
 @sheldon- I thought there was some limitation on reference characteristics to /ERP delivered objects per note 2377290
 
 @ Jay :) - this is a big issue for customers and we have no answer for them. The question generally is - why does the latest release 1709, come delivered with old tech (multiproviders). there is a conversion tool provided by SAP which has some issues... ( I have not used it though).
 ===================
-SAPBC_DATA_GENERATOR - создание новых данных в SFLIGHT, SBOOK
+SAPBC_DATA_GENERATOR - Г±Г®Г§Г¤Г Г­ГЁГҐ Г­Г®ГўГ»Гµ Г¤Г Г­Г­Г»Гµ Гў SFLIGHT, SBOOK
 ====================
-data(lv_run_mode) = cond string( when mv_test = abap_true then 'тестовый' else 'продуктивный' ).
-write: / |Режим запуска : { lv_run_mode }|.
+data(lv_run_mode) = cond string( when mv_test = abap_true then 'ГІГҐГ±ГІГ®ГўГ»Г©' else 'ГЇГ°Г®Г¤ГіГЄГІГЁГўГ­Г»Г©' ).
+write: / |ГђГҐГ¦ГЁГ¬ Г§Г ГЇГіГ±ГЄГ  : { lv_run_mode }|.
 ==================
 For SAT
 REPORT zrundtp.
@@ -1842,21 +1842,21 @@ HANA SCript view. Create steps
 ===
 The reason for this kind of endless loop is that we waiting for a status message from the scheduled task that is not coming. One reason could be that the task is never exected by the QDQ Monditor since the ODP Queue is supended (resume via program ODQ_TQ_RESUME_TASK_QUEUE). To check this you can use the transaction ODQ_TQ_MONITOR. With this correction we will wait maxium 100 seconds for a status message and then we come back with the External Task ID with that it is possible to check the task status in ODQ_TQ_MONITOR.
 ==============
-Это выражение в фильтре на узле типа "проекция" в CV !!!
+ГќГІГ® ГўГ»Г°Г Г¦ГҐГ­ГЁГҐ Гў ГґГЁГ«ГјГІГ°ГҐ Г­Г  ГіГ§Г«ГҐ ГІГЁГЇГ  "ГЇГ°Г®ГҐГЄГ¶ГЁГї" Гў CV !!!
 if("CC_IP_STORNO" ='X',  "CC_STORNO"='', 1=1 )
-Там могут быть не только поле_оператор_константа, но и такое!!!
+Г’Г Г¬ Г¬Г®ГЈГіГІ ГЎГ»ГІГј Г­ГҐ ГІГ®Г«ГјГЄГ® ГЇГ®Г«ГҐ_Г®ГЇГҐГ°Г ГІГ®Г°_ГЄГ®Г­Г±ГІГ Г­ГІГ , Г­Г® ГЁ ГІГ ГЄГ®ГҐ!!!
 ============= 
 RSMNG BW/4 old administrator GUI
 =============
 RSDG_TRFN_ACTIVATE
 activate transformation
 ====================
-Придумал такой способ передачи информации между выбранной переменной и методом compute_table в BAdI, в котором можно менять состав строк отчетов
-В методе для переменных на шаге 3 пишешь что-то вроде этого
+ГЏГ°ГЁГ¤ГіГ¬Г Г« ГІГ ГЄГ®Г© Г±ГЇГ®Г±Г®ГЎ ГЇГҐГ°ГҐГ¤Г Г·ГЁ ГЁГ­ГґГ®Г°Г¬Г Г¶ГЁГЁ Г¬ГҐГ¦Г¤Гі ГўГ»ГЎГ°Г Г­Г­Г®Г© ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г®Г© ГЁ Г¬ГҐГІГ®Г¤Г®Г¬ compute_table Гў BAdI, Гў ГЄГ®ГІГ®Г°Г®Г¬ Г¬Г®Г¦Г­Г® Г¬ГҐГ­ГїГІГј Г±Г®Г±ГІГ Гў Г±ГІГ°Г®ГЄ Г®ГІГ·ГҐГІГ®Гў
+Г‚ Г¬ГҐГІГ®Г¤ГҐ Г¤Г«Гї ГЇГҐГ°ГҐГ¬ГҐГ­Г­Г»Гµ Г­Г  ГёГ ГЈГҐ 3 ГЇГЁГёГҐГёГј Г·ГІГ®-ГІГ® ГўГ°Г®Г¤ГҐ ГЅГІГ®ГЈГ®
 
   METHOD if_rsroa_variables_exit_badi~process.
 
-    IF i_step = 3. "проверка введенных  значений
+    IF i_step = 3. "ГЇГ°Г®ГўГҐГ°ГЄГ  ГўГўГҐГ¤ГҐГ­Г­Г»Гµ  Г§Г­Г Г·ГҐГ­ГЁГ©
       DATA:
          ls_zbw_cumlabel TYPE zbw_cumlabel.
       TRY.
@@ -1871,23 +1871,23 @@ activate transformation
     ENDIF.
   ENDMETHOD.
 
-Передача через сохранение в таблице zbw_cumlabel пары GUID и метки времени из структуры i_s_rkb1d. Можно гарантировать, что эта комбинация уникальна.
+ГЏГҐГ°ГҐГ¤Г Г·Г  Г·ГҐГ°ГҐГ§ Г±Г®ГµГ°Г Г­ГҐГ­ГЁГҐ Гў ГІГ ГЎГ«ГЁГ¶ГҐ zbw_cumlabel ГЇГ Г°Г» GUID ГЁ Г¬ГҐГІГЄГЁ ГўГ°ГҐГ¬ГҐГ­ГЁ ГЁГ§ Г±ГІГ°ГіГЄГІГіГ°Г» i_s_rkb1d. ГЊГ®Г¦Г­Г® ГЈГ Г°Г Г­ГІГЁГ°Г®ГўГ ГІГј, Г·ГІГ® ГЅГІГ  ГЄГ®Г¬ГЎГЁГ­Г Г¶ГЁГї ГіГ­ГЁГЄГ Г«ГјГ­Г .
 
-А в методе BAdI – считываем ту же структуру i_s_rkb1d и ищем для данных из нее запись в таблице. Нашли – ОК, передача параметров состоялась… Не нашли – нет.
-i_s_rkb1d есть как параметр в обоих методах обоих классов для BAdI.
+ГЂ Гў Г¬ГҐГІГ®Г¤ГҐ BAdI вЂ“ Г±Г·ГЁГІГ»ГўГ ГҐГ¬ ГІГі Г¦ГҐ Г±ГІГ°ГіГЄГІГіГ°Гі i_s_rkb1d ГЁ ГЁГ№ГҐГ¬ Г¤Г«Гї Г¤Г Г­Г­Г»Гµ ГЁГ§ Г­ГҐГҐ Г§Г ГЇГЁГ±Гј Гў ГІГ ГЎГ«ГЁГ¶ГҐ. ГЌГ ГёГ«ГЁ вЂ“ ГЋГЉ, ГЇГҐГ°ГҐГ¤Г Г·Г  ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Г±Г®Г±ГІГ®ГїГ«Г Г±ГјвЂ¦ ГЌГҐ Г­Г ГёГ«ГЁ вЂ“ Г­ГҐГІ.
+i_s_rkb1d ГҐГ±ГІГј ГЄГ ГЄ ГЇГ Г°Г Г¬ГҐГІГ° Гў Г®ГЎГ®ГЁГµ Г¬ГҐГІГ®Г¤Г Гµ Г®ГЎГ®ГЁГµ ГЄГ«Г Г±Г±Г®Гў Г¤Г«Гї BAdI.
 
-…
+вЂ¦
         SELECT SINGLE compuid FROM zbw_cumlabel
           INTO @DATA(lv_zbw_cumlabel)
           WHERE compuid = @i_s_rkb1d-compuid
             AND genuniid = @i_s_rkb1d-genuniid
             AND tmstmp_start = @i_s_rkb1d-tmstmp_start.
         IF sy-subrc = 0.
-          « параметр передан! 
+          В« ГЇГ Г°Г Г¬ГҐГІГ° ГЇГҐГ°ГҐГ¤Г Г­! 
         ENDIF.
-…
+вЂ¦
 
-Для передачи используется физическая таблица zbw_cumlabel, которую надо периодически вычищать по полю repdate.
+Г„Г«Гї ГЇГҐГ°ГҐГ¤Г Г·ГЁ ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї ГґГЁГ§ГЁГ·ГҐГ±ГЄГ Гї ГІГ ГЎГ«ГЁГ¶Г  zbw_cumlabel, ГЄГ®ГІГ®Г°ГіГѕ Г­Г Г¤Г® ГЇГҐГ°ГЁГ®Г¤ГЁГ·ГҐГ±ГЄГЁ ГўГ»Г·ГЁГ№Г ГІГј ГЇГ® ГЇГ®Г«Гѕ repdate.
 
 ====================
 2619180 - Restricting 0INFOPROV InfoObject you see only technical names
@@ -1911,7 +1911,7 @@ I solved by a deletion of Database & Cache from preferences.
 go to Window-->Preferences, searc for Semantic File System & press "Delete Database & Cache".
 ===================
 t-code RSMNG - BW/4 GUI administering data targets
-t-code BW4WEB (also known as “BW Fiori Launchpad”).
+t-code BW4WEB (also known as вЂњBW Fiori LaunchpadвЂќ).
 t-code RSTRANGUI - show transformation
 t-code RSDTP - show DTP
 https://launchpad.support.sap.com/#/notes/2859559
