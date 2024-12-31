@@ -1,5 +1,5 @@
-коллеги на всякий случай как можно вытащить бинарные данные из БД со стороны оракла:
-Create a directory the database can use to export the data:
+-- как можно вытащить бинарные данные из БД со стороны оракла:
+-- Create a directory the database can use to export the data:
 
 CREATE DIRECTORY export_dir AS '/path/to/your/directory';
 

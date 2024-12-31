@@ -1,0 +1,572 @@
+*******************************************************************
+FROM HAQ (BEFORE MEGA IMPORT)
+*******************************************************************
+
+CREATE procedure "BDMA_LOAD"."B_HP_PO_TARIFF_INSERT"()
+LANGUAGE SQLSCRIPT 
+SQL SECURITY INVOKER
+as
+begin
+
+DECLARE YES_WORD NVARCHAR(20);
+DECLARE NO_WORD NVARCHAR(20);
+
+SELECT CODEEXT INTO "NO_WORD" FROM "HAD"."SAPABAP1"."ZBI_CODEEXT" WHERE IOBJMN = 'ALL' AND LANGU = 'E' AND CODE = '0';
+SELECT CODEEXT INTO "YES_WORD" FROM "HAD"."SAPABAP1"."ZBI_CODEEXT" WHERE IOBJMN = 'ALL' AND LANGU = 'E' AND CODE = '1';
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка PO_TARIFF началась');
+
+upsert "SAP_BDPT_T2"."sap.bdpt.hana.repository::Product.PRODUCT_OFFERING"
+(PRODUCT_OFFERING_ID, VALID_FOR_START_DATE, VALID_FOR_END_DATE, NAME, DESCRIPTION, PRODUCT_GROUP, TECHNOLOGY, MARKET_ID, 
+ CLASSIFICATION_01, CLASSIFICATION_02, CLASSIFICATION_03, CLASSIFICATION_04, CLASSIFICATION_05, 
+ CLASSIFICATION_06, CLASSIFICATION_07, CLASSIFICATION_08, CLASSIFICATION_09, CLASSIFICATION_10,
+ STATUS, STATUS_DATE, SOURCE, RUN_TIMESTAMP, RUN_ID)
+select 
+
+T."/BIC/DTRPL_ID" AS PRODUCT_OFFERING_ID,
+--TO_DATE('20180101','YYYYMMDD') AS VALID_FOR_START_DATE,
+'' AS VALID_FOR_START_DATE,
+CASE IFNULL(T.ARCHIVE_DATE,'00000000')
+	WHEN '00000000' THEN TO_DATE('99991231','YYYYMMDD')
+	ELSE TO_DATE(T.ARCHIVE_DATE,'YYYYMMDD')
+END AS VALID_FOR_END_DATE,
+LEFT(T.TRPL_NAME,40) AS NAME,
+--LEFT(T.TRPL_NAME,40) AS DESCRIPTION,
+'' AS DESCRIPTION,
+LEFT(T.CONCEPT_LINE,40) AS PRODUCT_GROUP,
+'' AS TECHNOLOGY,
+LEFT(T.BUSINESS_SEGMENT_NAME, 40) AS MARKET_ID,
+'' AS CLASSIFICATION_01,
+LEFT(T.BUNDLE_SIZE, 40) AS CLASSIFICATION_02,
+LEFT(T.TARIFICATION_TYPE, 40) AS CLASSIFICATION_03,
+MAP(LEFT(T.PUBLICITY_IND  , 40), 0,:NO_WORD,1,:YES_WORD) AS CLASSIFICATION_04,
+MAP(LEFT(T.SPEED_LIMIT_IND ,40), 0,:NO_WORD,1,:YES_WORD) AS CLASSIFICATION_05,
+--MAP(T.MARK_COMPANY_DATE,'00000000','',TO_DATE(T.MARK_COMPANY_DATE,'YYYYMMDD')) AS CLASSIFICATION_06,
+'' AS CLASSIFICATION_06,
+LEFT(T.TRPL_TYPE, 40) AS CLASSIFICATION_07,
+RESERVED_1 AS CLASSIFICATION_08,
+RESERVED_2 AS CLASSIFICATION_09,
+CASE IFNULL(MARK_COMPANY_DATE,'00000000')
+ WHEN '00000000' THEN ''
+  ELSE MARK_COMPANY_DATE
+ END AS CLASSIFICATION_10,
+T.STATUS AS STATUS,
+CASE IFNULL(T.ARCHIVE_DATE,'00000000')
+	WHEN '00000000' THEN TO_DATE('99991231','YYYYMMDD')
+	ELSE TO_DATE(T.ARCHIVE_DATE,'YYYYMMDD')
+END AS STATUS_DATE,
+'BILLING' AS SOURCE,
+NOW() AS RUN_TIMESTAMP,
+'TRPL' AS RUN_ID
+ 
+from "HAD"."SAPABAP1"."/BIC/AD_ATRPL2" AS T;
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка PO_TARIFF завершилась');
+
+end;
+
+
+*******************************************************************
+FROM HAQ (BEFORE MEGA IMPORT)
+*******************************************************************
+
+
+CREATE procedure "BDMA_LOAD"."B_HP_SUBS_INSERT"()
+LANGUAGE SQLSCRIPT 
+SQL SECURITY INVOKER
+as
+begin
+
+declare D DATE;
+DECLARE M NVARCHAR(6);
+DECLARE YES_WORD NVARCHAR(20);
+DECLARE NO_WORD NVARCHAR(20);
+
+SELECT LAST_DAY(LOW) into "D" FROM "HAQ"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+SELECT LOW into "M" FROM "HAQ"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+SELECT CODEEXT INTO "NO_WORD" FROM "HAQ"."SAPABAP1"."ZBI_CODEEXT" WHERE IOBJMN = 'ALL' AND LANGU = 'E' AND CODE = '0';
+SELECT CODEEXT INTO "YES_WORD" FROM "HAQ"."SAPABAP1"."ZBI_CODEEXT" WHERE IOBJMN = 'ALL' AND LANGU = 'E' AND CODE = '1';
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка абонентов в Subscription началась');
+
+UPSERT "SAP_BDPT_T2"."sap.bdpt.hana.repository::Subscription.SUBSCRIPTION"
+
+select S."/BIC/DSUBSCR" AS SUBSCRIPTION_ID,
+	S."/BIC/DVERSION" AS SUBSCRIPTION_VERSION,
+	S."/BIC/DSUBSCR" AS BILLING_ACCOUNT_ID,
+	TO_DATE(S."DATEFROM",'YYYYMMDD') AS VALID_FOR_START_DATE,
+	TO_DATE(S."DATETO",'YYYYMMDD') AS VALID_FOR_END_DATE,
+	TO_DATE(MAP(A."/BIC/DSUB_ACTD",'00000000',NULL,A."/BIC/DSUB_ACTD"),'YYYYMMDD') AS CONTRACT_START_DATE,
+	TO_DATE(MAP(A.DATE_OF_TERMINATION,'00000000',NULL,A.DATE_OF_TERMINATION),'YYYYMMDD') AS CONTRACT_END_DATE,
+	'SUBS_' || S."/BIC/DSUBSCR" AS NAME,
+	ARPU.D_ARPU_FROM || '-' || D_ARPU_TO  AS TYPE,
+	S."/BIC/DTRPL_ID" AS PRODUCT_OFFERING_ID,
+	CONSRV.MSISDN AS PHONE_NUMBER,
+	S."/BIC/DTAC" AS IMSI,
+	'' AS CLASSIFICATION_01,
+	A.PHONE_TYPE AS CLASSIFICATION_02,	
+	A.CHURN_PROBABILITY || ' - ' || A.CHURN_BUCKET_VALUE AS CLASSIFICATION_03,
+	--IFNULL(DATA.DATA_FROM,0) || '-' || IFNULL(DATA.DATA_TO, 0) AS CLASSIFICATION_04,
+	DATA.TXTMD AS CLASSIFICATION_04,
+	TAC.DEV_GRP_NAME AS CLASSIFICATION_05,
+	TAC."/BIC/DTECHNLG" AS CLASSIFICATION_06,
+	M."/BIC/DSCHNL" AS SALES_CHANNEL,
+--	S."/BIC/DARH_TRPL" AS DEALER_ID,
+	MAP(S."/BIC/DARH_TRPL",'',:NO_WORD,'X',:YES_WORD) AS DEALER_ID,	
+	LEFT(A."/BIC/DPOS"*1 || ' ' || IFNULL(POS.POS_NAME,''), 40) AS POINT_OF_SALE,
+	LEFT(A."/BIC/DBRANCH"*1 || ' ' || IFNULL(BRANCH.TXTLG,''), 40) AS ORG_UNIT,
+	SM."/BIC/DCOH_NUM" AS EMPLOYEE_ID,
+	S."/BIC/DSUB_DON" AS MASTER_AGREEMENT_ID,
+	A.ADM_AMOUNT AS LEGAL_ENTITY_ID,
+	'' AS DEPRECATION_DATE,
+	TO_DATE(MAP(A."/BIC/DSUB_ACTD",'00000000',NULL,A."/BIC/DSUB_ACTD"),'YYYYMMDD') AS REGISTRATION_DATE,
+	LEFT(S."/BIC/DSUB_STAT",40) AS STATUS,
+	'' AS STATUS_DATE,
+	CASE S."/BIC/DMNP_ID"
+	WHEN 0 THEN ''
+	ELSE LEFT(IFNULL(MNP.TXTLG,''),40) 
+	END AS STATUS_ACTIVITY,
+	A."CALL_DROP_PERCENT" AS STATUS_REASON,
+	0 AS SERVICE_COMBINATION_ID,
+	A.PURCHASE_TYPE AS MARKET_ID,
+	A.NPS_ID AS LOYALTY_STATUS,
+	'' AS AUTHGROUP,
+	'BILLING' AS SOURCE,
+	NOW() AS RUN_TIMESTAMP,
+	:M || 'B' || A."/BIC/DBRANCH" AS RUN_ID
+
+
+--from "HAQ"."SAPABAP1"."/BIC/MDSUBSCR" as S 
+FROM BDMA_LOAD.B_HV_SUBS_UNIQUE as S 
+	JOIN "HAQ"."SAPABAP1"."/BIC/AD_A_SUBS2" A ON S."/BIC/DSUBSCR" = A."/BIC/DSUBSCR"
+	
+--	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/TDSUB_STAT" AS STAT ON S."/BIC/DSUB_STAT" = STAT."/BIC/DSUB_STAT" AND STAT.LANGU = 'R'
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/TDMNP_ID" AS MNP ON S."/BIC/DMNP_ID" = MNP."/BIC/DMNP_ID" AND MNP.LANGU = 'R'
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_ATAC2" AS TAC ON S."/BIC/DTAC" = TAC."/BIC/DTAC"
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_APOS2" AS POS ON A."/BIC/DPOS" = POS."/BIC/DPOS" 
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/TDBRANCH" AS BRANCH ON A."/BIC/DBRANCH" = BRANCH."/BIC/DBRANCH" AND BRANCH.LANGU = 'R'
+	
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/QDCLIENT" as C ON A."/BIC/DCLIENT" = C."/BIC/DCLIENT" AND S.DATEFROM > C.DATEFROM AND S.DATEFROM <= C.DATETO AND C.OBJVERS = 'A'
+ 	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_ACHANMP2" AS M ON A."/BIC/DSCH_ID" = M."/BIC/DSCH_ID" AND C."/BIC/DSUB_TYPE" = M."/BIC/DSUB_TYPE"
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_ACONSRV2" AS CONSRV ON S."/BIC/DSUBSCR" = CONSRV."/BIC/DSUBSCR" AND  S.DATETO > CONSRV.DATEFROM AND S.DATETO <= CONSRV.DATETO AND CONSRV."/BIC/DSERV_ID" = ''
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_A_SUBSM2" AS SM ON A."/BIC/DSUBSCR" = SM."/BIC/DSUBSCR" AND :M = SM.CALMONTH
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_ARPU2" AS ARPU ON SM."/BIC/DSUB_ARPU" >= ARPU.D_ARPU_FROM AND SM."/BIC/DSUB_ARPU" < ARPU.D_ARPU_TO	
+--	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_ADDATA2" AS DATA ON SM."/BIC/DFL_DATA" = DATA."/BIC/DFL_DATA"
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/TDFL_DATA" AS DATA ON SM."/BIC/DFL_DATA" = DATA."/BIC/DFL_DATA"
+ 	
+where S.OBJVERS = 'A' and S.datefrom <> '30000101';
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка абонентов в Subscription завершилась');
+
+END;
+
+-- *********************************************
+
+CREATE OR REPLACE PROCEDURE "BDMA"."BDMA_LOAD"."B_DELETE_COST_REV" 
+                           ( IN i_runid NVARCHAR(20)
+                           , IN i_branch_id NVARCHAR(5)
+                           , IN i_period NVARCHAR(6)
+                           , IN i_type NVARCHAR(7) )
+LANGUAGE SQLSCRIPT 
+sql security invoker
+as
+begin
+ declare lc_mess NVARCHAR(25) = 'Del cost_revenue: ';
+ lt_type_all = SELECT 'ADMBL' as i_type FROM dummy
+				union all
+				SELECT 'CALLS' as i_type FROM dummy
+				union all
+				SELECT 'CHARGES' as i_type FROM dummy
+				union all
+				SELECT 'CM2' as i_type FROM dummy
+				union all
+				SELECT 'CM4' as i_type FROM dummy
+				union all
+				SELECT 'DC' as i_type FROM dummy
+				union all
+				SELECT 'EXCH' as i_type FROM dummy
+				union all
+				SELECT 'OTH' as i_type FROM dummy;
+  
+  IF :i_runid <> '' THEN
+--     call "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.utility.dataimport::DELETE_COST_REVENUE_FOR_RUN_ID"(:i_runid);
+     call "BDMA"."BDMA_LOAD"."B_HP_SAVE_TO_LOG"(lc_mess || 'by runid=' || :i_runid);
+  ELSEIF :i_period = '' THEN
+     call "BDMA"."BDMA_LOAD"."B_HP_SAVE_TO_LOG"(lc_mess || 'Missing obligatory period');
+  ELSEIF :i_branch_id <> '' THEN
+     IF :i_type <> '' THEN
+		lt_type = SELECT i_type FROM :lt_type_all WHERE i_type = :i_type;
+        lt_runid = SELECT DISTINCT t1.run_id 
+                     FROM "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenue.COST_REVENUE" as t1, :lt_type as t2
+                     WHERE t1.run_id LIKE '%B'|| :i_branch_id
+                       AND t2.i_type = :i_type
+                       AND t1.run_id LIKE '%' || :i_period || '%'
+                       AND t1.run_id LIKE t2.i_type || '%';
+        call "BDMA"."BDMA_LOAD"."B_HP_SAVE_TO_LOG"(lc_mess || 'by branch_id=' || :i_branch_id || ',type=' || :i_type );  
+     ELSE
+        lt_runid = SELECT DISTINCT t1.run_id 
+                     FROM "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenue.COST_REVENUE" as t1
+                     WHERE t1.run_id LIKE '%B'|| :i_branch_id
+                       AND t1.run_id LIKE '%' || :i_period || '%';
+        call "BDMA"."BDMA_LOAD"."B_HP_SAVE_TO_LOG"(lc_mess || 'by branch_id=' || :i_branch_id );                                             
+     END IF;
+  ELSEIF :i_type <> '' THEN
+		lt_type = SELECT i_type FROM :lt_type_all WHERE i_type = :i_type;
+        lt_runid = SELECT DISTINCT t1.run_id 
+                     FROM "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenue.COST_REVENUE" as t1, :lt_type as t2
+                     WHERE t2.i_type = :i_type
+                       AND t1.run_id LIKE '%' || :i_period || '%'
+                       AND t1.run_id LIKE t2.i_type || '%';  
+        call "BDMA"."BDMA_LOAD"."B_HP_SAVE_TO_LOG"(lc_mess || 'by type=' || :i_type );                        
+  END IF;
+  IF :i_runid = '' THEN
+--    SELECT run_id FROM :lt_runid;
+    DECLARE CURSOR curs1  FOR 
+      SELECT run_id FROM :lt_runid ORDER BY run_id;
+    FOR c_run_id AS curs1 DO
+--        call "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.utility.dataimport::DELETE_COST_REVENUE_FOR_RUN_ID"(c_run_id.run_id);
+        call "BDMA"."BDMA_LOAD"."B_HP_SAVE_TO_LOG"(lc_mess || 'by runid=' || c_run_id.run_id);        
+    END FOR;
+  END IF;  
+end;
+
+call "BDMA"."BDMA_LOAD"."B_DELETE_COST_REV"('','00102','201803','CM22');
+
+SELECT * FROM "BDMA"."BDMA_LOAD"."B_HT_LOAD_LOG" ORDER BY 1 DESC, 2 DESC
+
+SELECT DISTINCT t1.run_id 
+                     FROM "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenue.COST_REVENUE" as t1
+                     WHERE t1.run_id LIKE 'CM4' || '%';
+
+
+
+SELECT DISTINCT run_id FROM "BDMA"."SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenue.COST_REVENUE";
+
+/*
+declare D DATE;
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('???????? Exchange ??? branch: ' || :branch || ' ????????');
+
+
+
+SELECT LOW || '01' into "D" FROM "HAD"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+
+INSERT INTO "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenue.COST_REVENUE"
+(
+REC_ID,CUSTOMER_ID,BILLING_ACCOUNT_ID,SUBSCRIPTION_ID,SUBSCRIPTION_VERSION,VALID_FOR_DATE,VALID_FOR_MONTH,SERVICE_SPECIFICATION_ID,
+BILLING_CYCLE_ID,BILLING_DATE,TECHNOLOGY,SERVICE_SP
+
+*/
+
+call "BDMA_LOAD"."B_HP_PO_TARIFF_INSERT"();
+
+call "BDMA_LOAD"."B_HP_PO_MRKTPROD_INSERT"();
+
+select * FROM "SAP_BDPT_T2"."sap.bdpt.hana.repository::Product.PRODUCT_OFFERING"
+commit
+
+update t1
+ set SUBSCRIPTION_PRODUCT_CLASSIFICATION_01 = t2.CLASSIFICATION_01,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_02 = t2.CLASSIFICATION_02,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_03 = t2.CLASSIFICATION_03,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_04 = t2.CLASSIFICATION_04,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_05 = t2.CLASSIFICATION_05,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_06 = t2.CLASSIFICATION_06,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_07 = t2.CLASSIFICATION_07,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_08 = t2.CLASSIFICATION_08,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_09 = t2.CLASSIFICATION_09,
+     SUBSCRIPTION_PRODUCT_CLASSIFICATION_10 = t2.CLASSIFICATION_10,
+     SUBSCRIPTION_PRODUCT_GROUP = t2.PRODUCT_GROUP,
+     SUBSCRIPTION_PRODUCT_MARKET_ID = t2.MARKET_ID,
+     SUBSCRIPTION_PRODUCT_STATUS = t2.STATUS
+ from "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenueSubscriber.COST_REVENUE_SUBSCRIBER" t1,
+      "SAP_BDPT_T2"."sap.bdpt.hana.repository::Product.PRODUCT_OFFERING" t2
+ where t2.product_offering_id = t1.subscription_product_offering_id
+   and t1.subscription_product_offering_id = '30000186'
+   
+SELECT t1.subscription_product_offering_id, count(*) as cnt FROM
+   "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenueSubscriber.COST_REVENUE_SUBSCRIBER" t1
+  where t1.subscription_product_offering_id <> ''
+    and t1.subscription_product_offering_id in ( '30000192', '30000277')
+   group by t1.subscription_product_offering_id
+  order by 1 asc
+ 
+SELECT 
+t1.subscription_product_offering_id,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_01,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_02,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_03,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_04,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_05,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_06,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_07,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_08,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_09,
+SUBSCRIPTION_PRODUCT_CLASSIFICATION_10
+FROM  "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenueSubscriber.COST_REVENUE_SUBSCRIBER" as t1
+ WHERE t1.subscription_product_offering_id in ( '30000192', '30000277') 
+   
+   
+select * from "SAP_BDPT_T2"."sap.bdpt.hana.repository::Product.PRODUCT_OFFERING" as t2
+  WHERE t2.product_offering_id = '30012729'
+ 
+do begin
+    declare lv_row_count INTEGER;
+    declare i INTEGER;
+    declare lv_curr_po_id nvarchar(40);
+    prod_offer_list = 
+      SELECT t1.subscription_product_offering_id as po_id FROM
+      "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenueSubscriber.COST_REVENUE_SUBSCRIBER" t1
+       where t1.subscription_product_offering_id <> ''   
+--		 and t1.subscription_product_offering_id in ( '30000192', '30000277')       
+       group by t1.subscription_product_offering_id;
+    SELECT COUNT(*) INTO lv_row_count FROM :prod_offer_list;
+	FOR i IN 0 .. :lv_row_count-1 DO
+	    SELECT po_id INTO lv_curr_po_id
+	    FROM :prod_offer_list
+	    LIMIT 1 OFFSET :i;  
+		update t1
+		 set SUBSCRIPTION_PRODUCT_CLASSIFICATION_01 = t2.CLASSIFICATION_01,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_02 = t2.CLASSIFICATION_02,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_03 = t2.CLASSIFICATION_03,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_04 = t2.CLASSIFICATION_04,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_05 = t2.CLASSIFICATION_05,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_06 = t2.CLASSIFICATION_06,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_07 = t2.CLASSIFICATION_07,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_08 = t2.CLASSIFICATION_08,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_09 = t2.CLASSIFICATION_09,
+		     SUBSCRIPTION_PRODUCT_CLASSIFICATION_10 = t2.CLASSIFICATION_10,
+		     SUBSCRIPTION_PRODUCT_GROUP = t2.PRODUCT_GROUP,
+		     SUBSCRIPTION_PRODUCT_MARKET_ID = t2.MARKET_ID,
+		     SUBSCRIPTION_PRODUCT_STATUS = t2.STATUS
+		 from "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenueSubscriber.COST_REVENUE_SUBSCRIBER" t1,
+		      "SAP_BDPT_T2"."sap.bdpt.hana.repository::Product.PRODUCT_OFFERING" t2
+		 where t2.product_offering_id = t1.subscription_product_offering_id
+		   and t1.subscription_product_offering_id = lv_curr_po_id;	
+		commit;    
+	END FOR;
+end;
+
+select 
+from "SAP_BDPT_T2"."sap.bdpt.hana.repository::CostRevenueSubscriber.COST_REVENUE_SUBSCRIBER"
+
+--Statement 'do begin declare lv_row_count INTEGER; declare i INTEGER; declare lv_curr_po_id nvarchar(40); ...' 
+--successfully executed in 11:21.313 minutes  (server processing time: 11:21.293 minutes) - Rows Affected: 70147404 
+
+=========================
+
+CREATE OR REPLACE PROCEDURE "BDMA"."BDMA_LOAD"."TEST" 
+LANGUAGE SQLSCRIPT 
+sql security invoker  READS SQL DATA
+as
+begin
+ DECLARE v_isbn VARCHAR(32) = '';
+ SELECT SYSUUID INTO v_isbn from dummy;
+ 
+ select  v_isbn from dummy;
+end;
+
+CALL "BDMA"."BDMA_LOAD"."TEST" ;
+
+'341F00C0A880146B16001A004E2AFFED'
+'3D1F00C0A880146B16001A004E2AFFED'
+
+===================
+
+*******************************************************************
+FROM HAQ (BEFORE MEGA IMPORT)
+*******************************************************************
+
+CREATE OR REPLACE procedure "BDMA_LOAD"."B_HP_THIRDPARTY_INSERT"()
+LANGUAGE SQLSCRIPT 
+SQL SECURITY INVOKER
+as
+begin
+
+declare D DATE;
+DECLARE M NVARCHAR(6);
+
+SELECT LAST_DAY(LOW) into "D" FROM "HAD"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+SELECT LOW into "M" FROM "HAD"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+
+upsert "SAP_BDPT_T2"."sap.bdpt.hana.repository::Customer.THIRD_PARTY"
+(THIRD_PARTY_ID, NAME, TYPE, SOURCE, RUN_TIMESTAMP, RUN_ID)
+select 
+LEFT(C."/BIC/DCNTRPART",40) AS THIRD_PARTY_ID,
+T.TXTMD AS NAME,
+C."/BIC/DROLEDESC" AS TYPE,
+'BILLING' AS SOURCE,
+NOW() AS RUN_TIMESTAMP,
+:M || 'T2' AS RUN_ID
+ 
+from "HAD"."SAPABAP1"."/BIC/PDCNTRPART" AS C
+LEFT JOIN "HAD"."SAPABAP1"."/BIC/TDCNTRPART" AS T ON C."/BIC/DCNTRPART" = T."/BIC/DCNTRPART"
+where C."/BIC/DROLEDESC" <> '';
+
+end
+
+=======================
+
+*******************************************************************
+FROM HAQ (BEFORE MEGA IMPORT)
+*******************************************************************
+
+CREATE procedure "BDMA_LOAD"."B_HP_BAN_INSERT"()
+LANGUAGE SQLSCRIPT 
+SQL SECURITY INVOKER
+as
+begin
+declare D DATE;
+DECLARE M NVARCHAR(6);
+DECLARE YES_WORD NVARCHAR(20);
+DECLARE NO_WORD NVARCHAR(20);
+
+SELECT LAST_DAY(LOW) into "D" FROM "HAQ"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+SELECT LOW into "M" FROM "HAQ"."SAPABAP1".TVARVC WHERE NAME = 'REVENUE_CALC_DATE';
+SELECT CODEEXT INTO "NO_WORD" FROM "HAQ"."SAPABAP1"."ZBI_CODEEXT" WHERE IOBJMN = 'ALL' AND LANGU = 'E' AND CODE = '0';
+SELECT CODEEXT INTO "YES_WORD" FROM "HAQ"."SAPABAP1"."ZBI_CODEEXT" WHERE IOBJMN = 'ALL' AND LANGU = 'E' AND CODE = '1';
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка абонентов в BillingAccount началась');
+
+UPSERT "SAP_BDPT_T2"."sap.bdpt.hana.repository::BillingAccount.BILLING_ACCOUNT"
+(BILLING_ACCOUNT_ID, TYPE, NAME, CUSTOMER_ID, PRODUCT_OFFERING_ID, VALID_FOR_START_DATE, VALID_FOR_END_DATE,REGISTRATION_DATE,
+ CLASSIFICATION_01,CLASSIFICATION_02,CLASSIFICATION_03,CLASSIFICATION_04,
+ SALES_CHANNEL,DEALER_ID, POINT_OF_SALE, ORG_UNIT, EMPLOYEE_ID,
+ MASTER_AGREEMENT_ID,LEGAL_ENTITY_ID,DEPRECATION_DATE,STATUS,STATUS_DATE,SOURCE,
+  RUN_TIMESTAMP, RUN_ID)
+ 
+select A."/BIC/DSUBSCR" AS BILLING_ACCOUNT_ID,
+	ATD."/BIC/DSUB_ARPU" AS TYPE,
+--	'BAN_' || A."/BIC/DSUBSCR" AS NAME,
+	'' AS NAME,
+	 A."/BIC/DSUBSCR" AS CUSTOMER_ID,
+	 A.PRODUCT_KEY AS PRODUCT_OFFERING_ID,
+	 '' AS VALID_FOR_START_DATE,
+	 '' AS VALID_FOR_END_DATE,
+	CASE IFNULL(P.OPEN_DATE,'00000000')
+		WHEN '00000000' THEN TO_DATE('20000101','YYYYMMDD')
+		ELSE P.OPEN_DATE
+	END AS REGISTRATION_DATE,
+	LEFT(A."/BIC/DPOS",40) AS CLASSIFICATION_01,
+--	LEFT(A.CMSN_SIP_YN,40) AS CLASSIFICATION_01,	
+	'' AS CLASSIFICATION_02,
+--	LEFT(A.CMSN_LIMIT,40) AS CLASSIFICATION_02,	
+/*    case when LEFT(A.CMSN_PERIOD,2) in ('00','05','06','07','08','09','10','11','12') then LEFT(A.CMSN_PERIOD,2)*1 || ' месяцев'
+         when LEFT(A.CMSN_PERIOD,2) in ('01'                                        ) then LEFT(A.CMSN_PERIOD,2)*1 || ' месяц'
+         when LEFT(A.CMSN_PERIOD,2) in ('02','03','04'                              ) then LEFT(A.CMSN_PERIOD,2)*1 || ' месяца'
+                                                   else LEFT(A.CMSN_PERIOD,2) || ' месяцев' 
+                                                   end as CLASSIFICATION_03,
+	LEFT(A.CMSN_RATE,40) || '%' AS CLASSIFICATION_04 
+	LEFT(A.CMSN_FS_NAME,40) AS CLASSIFICATION_05,
+	LEFT(C.NEG_BALANCE_DAY,40) AS CLASSIFICATION_06, */
+	'' as CLASSIFICATION_03,
+	'' as CLASSIFICATION_04,	
+--	MAP(A.QOUTA_IND,0,:NO_WORD,1,:YES_WORD) AS SALES_CHANNEL,	 
+	'' AS SALES_CHANNEL,	
+--	A.NPS_POINT_NAME AS DEALER_ID,
+	'' AS DEALER_ID,
+	A."/BIC/DPOS" AS POINT_OF_SALE,
+	A."/BIC/DBRANCH" AS ORG_UNIT,
+--	A."/BIC/DINT_MOVE" AS EMPLOYEE_ID,
+--	MAP(A."/BIC/DINT_MOVE",'',:NO_WORD,'X',:YES_WORD) AS EMPLOYEE_ID,	
+	A."/BIC/DSUB_ACTD" AS EMPLOYEE_ID,	
+	'' AS MASTER_AGREEMENT_ID,
+	A."/BIC/DSUB_ACTD" AS LEGAL_ENTITY_ID,	
+--	TO_DATE(MAP(A.LAST_ADM_DATE,'00000000',NULL,A.LAST_ADM_DATE),'YYYYMMDD') AS DEPRECATION_DATE,
+	'' AS DEPRECATION_DATE,
+--	 A.IND_2G_ON_3G4G_DEVICE AS STATUS,
+--	MAP(A.IND_2G_ON_3G4G_DEVICE,'',:NO_WORD,'X',:YES_WORD) AS STATUS,	 
+	ATD."AGE_R" AS STATUS,	 
+	 '' AS STATUS_DATE,
+	'BILLING' AS SOURCE,
+	NOW() AS RUN_TIMESTAMP,
+	:M || 'B' || A."/BIC/DBRANCH" AS RUN_ID
+	
+from "HAQ"."SAPABAP1"."/BIC/AD_A_SUBS2" AS A
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_A_CLNT2" AS C ON A."/BIC/DCLIENT" = C."/BIC/DCLIENT"
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_A_SUBSM2" AS ATD ON A."/BIC/DSUBSCR" = ATD."/BIC/DSUBSCR"
+	   AND to_char(NOW(),'YYYYMM') BETWEEN ATD."CALMONTH" AND '999912'
+	LEFT JOIN "HAQ"."SAPABAP1"."/BIC/AD_APOS2" AS P ON A."/BIC/DPOS" = P."/BIC/DPOS";
+	
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка абонентов в BillingAccount завершилась');
+END;
+
+==================
+
+REPORT zbdma_stage.
+
+PARAMETERS: pdbcon TYPE dbcon_name OBLIGATORY DEFAULT 'HDBBDMA'.
+
+WRITE: / |Выгрузка данных в BDMA. Начало. Соединение: { pdbcon }|.
+
+SELECT * INTO TABLE @DATA(lt_bdma_stage)
+ FROM zbdma_stage WHERE active = 'X'.
+SORT lt_bdma_stage BY orderno ASCENDING.
+
+TRY.
+    DATA(lo_conn) = cl_sql_connection=>get_connection( con_name = pdbcon ).
+    DATA(lo_statement) = lo_conn->create_statement( ).
+
+    LOOP AT lt_bdma_stage ASSIGNING FIELD-SYMBOL(<fs_bdma_stage>).
+      DATA(lv_rcnt) = lo_statement->execute_procedure( proc_name = <fs_bdma_stage>-procname ).
+      WRITE: / | Процедура { <fs_bdma_stage>-procname } выполнена. { lv_rcnt } строк обработано.|.
+      MESSAGE  | Процедура { <fs_bdma_stage>-procname } выполнена. { lv_rcnt } строк обработано.| TYPE 'I'.
+      CLEAR: lv_rcnt.
+    ENDLOOP.
+
+    IF lo_conn->is_closed( ) = ''.
+      lo_conn->close( ).
+    ENDIF.
+    WRITE: / |Выгрузка данных в BDMA. Окончание.|.
+  CATCH cx_sql_exception INTO DATA(lx_sql).
+    WRITE: / |!Ошибка выгрузки данных в BDMA. Процедура { <fs_bdma_stage>-procname }.|.
+    MESSAGE |!Ошибка выгрузки данных в BDMA. Процедура { <fs_bdma_stage>-procname }. См. spool.| TYPE 'E'.
+    WRITE: / |!Код ошибки { lx_sql->sql_code }.|.
+    WRITE: / |! { lx_sql->sql_message }|.
+    WRITE: / |! { lx_sql->get_text( ) }|.
+ENDTRY.
+
+===================
+
+
+upsert "SAP_BDPT_T2"."sap.bdpt.hana.repository::Product.PRODUCT_OFFERING"
+(PRODUCT_OFFERING_ID, VALID_FOR_START_DATE, VALID_FOR_END_DATE, NAME, DESCRIPTION, PRODUCT_GROUP, TECHNOLOGY, MARKET_ID,
+ CLASSIFICATION_01, CLASSIFICATION_02, CLASSIFICATION_03, CLASSIFICATION_04, CLASSIFICATION_05, 
+ CLASSIFICATION_06, CLASSIFICATION_07, CLASSIFICATION_08, CLASSIFICATION_09, CLASSIFICATION_10,
+ STATUS, STATUS_DATE, SOURCE, RUN_TIMESTAMP, RUN_ID )
+select 
+M.PRODUCT_KEY AS PRODUCT_OFFERING_ID,
+'' AS VALID_FOR_START_DATE,
+'' AS VALID_FOR_END_DATE,
+LEFT(M.PC_PAY_NAME, 40) AS NAME,
+LEFT(M.PC_PAY_NAME, 40) AS DESCRIPTION,
+'' AS PRODUCT_GROUP,
+'' AS TECHNOLOGY,
+'' AS MARKET_ID,
+'' AS CLASSIFICATION_01, 
+CASE M.PC_PAY_ID
+ WHEN '0' THEN ''
+ ELSE TRIM(BOTH FROM M.PC_PAY_ID) || ' - ' || TRIM(BOTH FROM M.PC_PAY_NAME) 
+END AS CLASSIFICATION_02,
+'' AS CLASSIFICATION_03,
+'' AS CLASSIFICATION_04,
+-- MAP(S."/BIC/DARH_TRPL",'',:NO_WORD,'X',:YES_WORD) AS DEALER_ID,	
+map(LEFT(M.PRIVELEGED_IND ,40),'0',:NO_WORD,'1', :YES_WORD) AS CLASSIFICATION_05,
+map(LEFT(M.CREDIT_IND     ,40),'0',:NO_WORD,'1', :YES_WORD) AS CLASSIFICATION_06,
+map(LEFT(M.DISCOUNT_IND   ,40),'0',:NO_WORD,'1', :YES_WORD) AS CLASSIFICATION_07,
+SUBSTR_BEFORE(LEFT(M.FIRST_PAY, 40),'.')  AS CLASSIFICATION_08,
+LEFT(M.PARTY_DETAILS_PRICE, 40)  AS CLASSIFICATION_09,
+LEFT(M.ACT_TRPL_ID || ' - ' || IFNULL(T.TRPL_NAME,NULL), 40)  AS CLASSIFICATION_10,
+'' AS STATUS,
+'' AS STATUS_DATE,
+'BILLING_MRKPRD' AS SOURCE,
+NOW() AS RUN_TIMESTAMP,
+'PRODUCT' AS RUN_ID
+ 
+from "HAD"."SAPABAP1"."/BIC/AD_APRDMAR1" AS M
+left join "HAD"."SAPABAP1"."/BIC/AD_ATRPL2" AS T ON M.ACT_TRPL_ID = T."/BIC/DTRPL_ID";
+
+call "BDMA_LOAD"."B_HP_SAVE_TO_LOG"('Загрузка PO_MRKTPROD завершилась');
+
+
+end;
