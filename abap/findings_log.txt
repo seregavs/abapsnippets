@@ -1,0 +1,1929 @@
+BW 7.50 requires HANA SPS10, Revision 102 or higher (see SAP note: 1600929) 
+
+Due to the inclusion of BPC 10.1 into the SAP_BW component for 7.50 you need to pay particular attention to the revision level of the HANA DB if you are using BPC. Check the compatibility matrix in SAP Note 2103585 - Product Component Matrix for SAP Business Planning & Consolidation 10.1, version for Net Weaver 7.4/7.5, 
+
+Mass maintenance of query properties is already available in the standard system:
+Transaction RSRT > Environment > Query Mass Maintenance
+Typically changes are transported (but there's also the option to change these in production directly for example for queries created in prod).
+
+OSS note 1150724, specifically the section referring to program RSAR_PSA_CLEANUP_DEFINITION. This appears to be the fix. Customer indicates error message is 'RSDS 248." Run program RSAR_PSA_CLEANUP_DIRECTORY to clean up the inconsistency of PSA table. (twice, one for check, and another for repair - without selection).
+
+SAP Note 1090842 is about general technical feasibility of cross release transports (i.e. TMS, r3trans, and related kernel and SAP Basis tools) and development objects (DDIC, ABAP). It is NOT about BW - or other applications - running on top of SAP NetWeaver AS. 
+The reason is quite simple: There is no testing of such cross release transports at SAP. Therefore we cannot support it.
+
+1808450 - Homogenous system landscape for on BW-HANA
+SAP strongly recommends to have the same DB platforms across all BW systems of a transport landscape (Development/ Sandbox/ Quality/ Production). Since transports in general work between non-HANA-based BW systems and HANA-based BW systems it is, closely managed(!), possible and acceptable to have this mixed landscape for a short period of time - a few weeks at most - e.g. until the hardware has arrived or the other systems could be migrated.
+
+In SAP BW, Edition for SAP HANA, BW objects for data modeling, as well as processes and user interfaces, are especially primed for use with a SAP HANA database. Data modeling is restricted to the small number of objects that are well suited for modeling the layer architecture of a data warehouse on SAP HANA (LSA++). In SAP BW, Edition for SAP HANA, data warehouse models in SAP BW can be flexibly combined with SAP HANA views. An intuitive Eclipse-based modeling environment supports object modeling here.
+http://help.sap.com/hc/bw75_edition4hana/helpdata/en/ea/977a824b594d5ebc78e20db2c7ec4a/content.htm
+http://help.sap.com/hc/bw75_edition4hana/helpdata/en/c3/4f2944e5f945b1962ed5e84fd2535a/content.htm
+
+For existing customers, SAP BW, edition for SAP HANA is optional. SAP BW, powered by SAP HANA contains all features and can be used going forward. Customers who want to move to the edition, would first set the "Prepare Mode" which turns all old objects to read-only. Once everything is converted to new objects, the customer would switch to the full "Edition Mode".
+Just like BW customers have the option to continue to use the non-SAP database or to migrate to SAP HANA, now BW/HANA customers have the choice to stick with the "good old BW on HANA" (stable core, non-disruptive) or to proceed on a path to SAP BW, edition for SAP HANA (including most new developments). 
+Currently (01.2016) there is no additional functionality included in the BW4HANA add-on. BW on anyDB as well as BW powered by SAP HANA will be enhanced in the future as well. However, our priorities are clearly on the SAP HANA platform. 
+
+I am not so confident with the new way of modeling. In S4H, the OLTP analytics is based on CDS View, but it seems that interoperabilities with CDS View seems not to be considered in B4H so well. I dont study CDS View so well, but I tihnk it might be better to create CDS views instead of new BW InfoProviders, e.g. CDS view instead of Composite provider.  After data are stored to the ABAP stack, it might be better to use CDS view including Analytic view, instead of Composite provider and BEX query..
+
+========
+https://wiki.wdf.sap.corp/wiki/display/PerformanceHANA/CPU+Sizing+for+HANA+Analytical+Applications
+=========
+Execute the program RSDDB_LOGINDEX_CREATE to create the column view (also known as a "logical index"), or repair the existing one, for a Multiprovider in BW.
+Alternatively, when you are running the post-migration report RS_BW_POST_MIGRATION with option 12) create calc views cubes/infoobjects (ONLY if not yet performed), which also incorporates index consistency checks on Multiproviders.
+========
+BPS is still supported and continues to exist even in the most recent BW 7.5 code line (runs with or without SAP HANA). However, for several years now there has be zero new development for BPS and therefore there's no "BPS roadmap". 
+As you mentioned BW-IP is the natural solution to move to and if the system runs on HANA, customers can leverage the Planning Application Kit (PAK), which speeds things up a lot.
+Alternatively, customers could go to BPC (standard model) or - with a simpler architecture i.e. no add-on - to BPC (embedded model) which comes as part of BW 7.4 or higher.
+My recommendation would be to go for the Embedded BPC solution. 
+Note: In any case, due to lack of migration tools, a re-implementation will be required!
+========
+OSS note 1666756 states : 'SAP HANA-specific optimization is no longer provided for BPS. BPS uses this database in the same way as a classic database when using BW on SAP HANA.'
+=========
+BW is supported with single node with 3TB scale up delivered by H/W vendor from lenevo, fujitsu,Huwaii. there are some advantages with scale up vs scale out. I would recommend to run the BW on HANA sizing report on weekend first before jumping to scale out. Incase  if there is still a requirement to multi node then from HANA studio under landscape use the option redistribute table after adding host. Follow SAP note 1908075 which has detailed steps.
+==========
+Exception aggregation defined in a HANA model will be ignored in a BW query. It is required to define explicit formula exception aggregation on the query level.This could be quite confusing. However it is a correct system behavior because exception aggregation should always be the last step of the whole calculation. A definition on DB level is too early to be consumed by a query.
+
+2176246 - OLAP Functions cannot be Pushed Down to HANA when using HCPR Built on Calculation Views
+2063449 - Push down of BW OLAP functionalities to SAP HANA
+https://wiki.scn.sap.com/wiki/display/BI/Exception+Aggregation+defined+in+a+HANA+Model
+
+2001947 - Switch for operations in SAP HANA
+Non-cumulative values (non-cumulative key figures)
+You can use the RSR_NCUM_PUSHDOWN switch to determine whether the calculation of non-cumulative values should take place. The following values are possible:
+<not set> (default value): The calculation of non-cumulative values takes place in ABAP.
+X: The calculation of non-cumulative values takes place in SAP HANA.
+==========
+COLLECT wa INTO itab [result]. 
+
+This statement inserts the content of a work area wa either as a single row in an internal table itab or adds the values of its numeric components to the corresponding values of existing rows with the same primary table key. wa is a functional operand position.
+Prerequisite for the use of this statement is that wa is compatible with the row type of itab. All components that are not part of the primary table key must have a numeric data type.
+
+The table is scanned for a row with the same primary key as follows:
+* In standard tables that are filled using COLLECT only, the entry is determined by a temporary hash administrator. The workload is independent of the number of entries in the table. The hash administrator is temporary and is generally invalidated when the table is accessed to be changed. If COLLECT statements are specified after an invalidation, a linear search of all table rows is performed. The workload for this search increases in a linear fashion in relation to the number of entries. 
+* In sorted tables, the entry is determined using a binary search. The workload has a logarithmic relationship to the number of entries in the table. 
+* In hashed tables, the entry is determined using the hash administrator of the table and is always independent of the number of table entries. 
+
+If no row is found with an identical primary key, a row is inserted as described below and filled with the content of wa:
+* In standard tables, the row is appended as the last row of the primary table index. 
+* In sorted tables, the new row is inserted in the sort order of the internal table in accordance with its key values, and the primary table index of the subsequent rows is increased by 1. 
+* In hashed tables, the new row is inserted into the internal table by the hash administrator, in accordance with its key values. 
+===========
+1009987 - Compounding problem in MultiProviders
+===========
+1729988 - SAP BW powered by SAP HANA - Checklist Tool
+The attached checklist tool automates the check of best practice guidelines for operations and pre-requisites for migration of an existing SAP BW deployment to the SAP HANA platform.
+Program ZBW_HANA_CHECKLIST
+===========
+RSRT => Execute and explain => Log Selection (Auth, Hierarchies, Planning, Exception Aggregation in HANA, Currency and Unit conversion,...)
+===========
+SAP HANA Transport for ABAP makes it possible to synchronize objects and packages from the SAP HANA repository to the SAP HANA Transport for ABAP repository (HTA repository) in the ABAP system and add them to a transport request.
+
+SAP HANA Transport for ABAP can be used when development objects in ABAP and SAP HANA have closely linked content and need to be transported together. HTA is the successor to HANA Transport Container (HTC), which was used up to SAP NetWeaver 7.4 SPS 10 to transport SAP HANA content for ABAP for SAP HANA applications and can be used to transport full delivery units (DUs) only.
+
+TCode SCTS_HTA
+1990798 - SAP HANA Transport for ABAP (HTA): Release Information
+http://help.sap.com/saphelp_nw74/helpdata/en/ff/7652bd542849b18b218efe8d2f2373/content.htm
+===========
+2122535 - How to determine if a BW on HANA query performance problem is HANA database related.
+
+In the BW runtime statistics output check how much of the query run time is database time. If the Data manager time (Event ID 9000) is not a significant part of the overall runtime of the query then the Query performance problem is not database related. Depending on the Event ID(s) that have the largest runtime you should be able to find were the performance problem is.
+===========
+"HANA Live" is supported until the end of 2017.
+"Embedded Analytics" is equivalent to HANA Live content but delivers CDS Views (mix of Abap & SQL) and is built to run with S4/HANA data model.
+
+CDS view technology is available from SAP Netweaver 7.4 SP5 (but SP8 brought a lot of improvements); It allows, among others things, to natively  reuse authorizations and hierarchies designed in the ERP without having to recreate them in SAP HANA and performing a double maintenance.
+
+If HANA Live meets your customer expectations and ERP system version is not at the minimum level required for CDS, go with HANA Live.
+Currently, no HANA Live to CDS views conversion tool exists but HANA Live VDM should continue to work after a migration to S4/HANA
+=============
+
+All S/4HANA CDS views are automatically exposed as a ODP transient InfoProvider and can be used in the BEx Query Designer to define custom queries.
+
+Technical name - 2C*
+=============
+2118742 - Analyzing HANA Live content package deployment problems
+=============
+1894854 - Performance issues while using Data Preview on HANA Studio
+
+Data Preview creates a query based on the most simple information of the underlying model. Therefore:
+
+All attributes will be requested in the result;
+If measures are used, the aggregation type defined for it will be included on the query as well (sum, max, min, etc). This applies for Analytic Views and Calculation Views with final node being 'Aggregation';
+No automatic filter or where clause will be added. This will happen unless variables and filters are set directly on the model. They can also be choosen on the Data Preview attribute screen (choose attribute -> right click -> set Filter);
+
+Data preview is not a mass data extraction tool. Therefore it must be used with care since it can generate high-resource-consuming queries, which may take time to finish.
+
+General best practices should be applied at modeling time. These are:
+
+- Add filters and mandatory variables to your model in order to lower the amount of data retrieved or joined throughout your model;
+
+- Keep the number of columns at the output to a bare minimum. Having more than 30 columns might be a bit too much for a human to read;
+
+==============
+3	HANA CDS VS ABAP CDS
+Core Data Services (CDS) is an infrastructure for defining and consuming semantically rich data models in SAP HANA using Data Definition Language (DDL), Query language (QL) and Expression language (EL). HANA CDS and ABAP CDS are two implementations based on the same specification. Both the implementations are almost similar but not equal.
+
+        HANA CDS: HANA CDS allows to develop applications directly on the database without using an application server  
+        and to create metadata repository directly on database. CDS provides the possibility to define the artifacts that make- 
+        up the data persistence model. The DDL’s (an executable file) of CDS allows to define the database tables, views,  
+        data types by wrapping the native HANA SQL statements and enriching them with semantic properties.
+         
+        ABAP CDS: The current ABAP dictionary has the capabilities of defining tables, views and data types. Adding to this   
+        the natural way of introducing CDS on the ABAP application server was to add it to the ABAP Dictionary. An ADT 
+        (ABAP Development Toolkit) based source code editor allows to create DDL sources. On activation, the CDS entities   
+        defined in such a DDL source become full citizen ABAP Dictionary objects. Currently there is a flexibility to either 
+        define sophisticated new views or simply wrap an existing table in a CDS view in order to enrich it semantically. 
+        Introducing CDS views in the ABAP Dictionary is one big step already taken with capabilities to create database 
+        tables, database functions, data types and this would ultimately allow to create data models in the ABAP Dictionary 
+        from scratch using ABAP CDS only.
+
+        Currently the copy of DDL sources from HANA to ABAP and vice versa is not supported. Also HANA CDS has to 
+        function on SAP HANA only and ABAP CDS is open.
+
+==============
+ABAP. Невозможно использовать pool-таблицы в SELECT-JOIN-операциях... Надо заменять на read table... внутри loop at...
+==============
+BW. Composite provider может быть источником данных!
+==============
+If CDS view have no input parameters (i.e. it is a common view inside DB, not a table function), you can import it into BW as OpenODS View based on the corresponding view inside HDB and use it for reporting. Then put it into Composite Provider in order to make transformations available (Composite Provider can be the source of a transformation, OpenODS View cannot). In such way you can consume also HANA information views.
+But keep in mind, that OpenODS view is like a proxy object to HDB (not an ABAP dictionary), so it doesn't know of changes in its source. You have to keep changes in sync manually.
+Another way is a Virtual Provider based on FM (inside FM you can use Dictionary-managed CDS) to work only with ABAP objects, but it looks to cumbersome and unnecessary.
+==============
+try
+      CATCH CX_ROOT.
+      ENDTRY.
+catchs all exceptions
+https://scn.sap.com/thread/919564
+===============
+ассоциации в CDS-view: определяются после select на перед {
+The syntax for defining and using associations is a high-value wrapping of the syntax for joins. Using associations instead of directly programming joins makes it easier to read the definition of a CDS view.
+===============
+CDS-view - по-русски колонки называть нельзя (в "") - Они ж потом частью словаря ABAP становятся
+
+The data aging concept makes it possible to distinguish between current, "HOT", data and old, "COLD"), data in a database system. Application programmers define which data is hot or cold in a special temperature column in a database table. The entries in this column partition the data in the database table and makes it possible to archive obsolete data in a transparent way for application programmers. The application programmers decide whether they only want to read current data or obsolete data too. In most cases, applications only want to read current data and this is the default setting for CDS views.
+in SNWD_SO see
+_DATAAGING	DATA_TEMPERATURE	DATS	8	0	Data Filter Value for Data Aging
+
+===============
+
+http://help.sap.com/abapdocu_740/en/index.htm?file=ABENCDS.htm
+
+The usage of annotations is not restricted to the ABAP Dictionary's own needs and the ABAP runtime environment (e.g.. Open SQL). As said above, you can enter for annotations what you want, as long as you stay within the syntax rules. Of course, there must be someone who evaluates it. And that's what software components of SAP do with ABAP 7.50! Software components of SAP such as ODATA, UI, and Analytics prescribe sets of annotations that can be used to achieve a defined behavior and the frameworks themselves provide frameworks that evaluate these framework specific annotations and act accordingly. With other words, it's not the ABAP runtime environment alone any more that evaluates DDL source codes! 
+Please note that SAP currently does not recommend to create customer annotations, At the moment you should work with SAP annotations (ABAP annotations and framework specific annotations) only.
+
+http://scn.sap.com/community/abap/blog/2015/11/13/abap-news-for-release-750--annotations-in-abap-cds
+===============
+CDS view in ABAP
+
+Core Data Services
+
+In 7.4 there is (tmho) no way to push some user-label on field-level towards the DDIC view, neither can you indicate which Data Element to use. All options can be found here.
+In 7.5 it is (should) be possible, by casting your field into a Data Element which holds the descriptions you want. 
+https://scn.sap.com/thread/3828357
+===============
+The CDS entity is the actual CDS view. It covers the CDS database view and makes other attributes possible, such as authorization checks defined in CDS. The name of this view, cds_entity, is defined in the definition of a CDS view after DEFINE VIEW. The definition of the CDS entity occurs only as CDS source code. The ABAP Dictionary tool in ABAP Workbench (SE11) does not recognize the CDS entity.
+===============
+When a CDS view is activated with path expressions, every association specified here is transformed to a join expression. The source data source represents the left side and the target data source represents the right side. The ON condition of the association is added to the ON condition of the join. By default, the category of the join is determined by where the path expression is used:
+
+After FROM, it is an inner join (INNER JOIN)
+In all other locations, it is a left outer join (LEFT OUTER JOIN)
+
+When specified, the cardinality is used mainly to document the semantics of the data model. The cardinality is not validated at runtime but can produce syntax check warnings.
+
+https://help.sap.com/abapdocu_750/en/abencds_f1_association.htm
+===============
+@AbapCatalog.sqlViewName: 'ZCDSFI001'
+@ClientDependent: true
+@AbapCatalog.compiler.CompareFilter: true
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Корреспонденция счетов (CDS)' 
+@DataAging.noAgingRestriction: true
+// own annotations (don't use unntil 7.50)
+@v_ann1:'doc_date'
+define view zcdsvfi001 as 
+select from /bic/azdsfi00400 
+ association to /bic/pzchfi005 as zchfi005 on $projection.zchfi005 = zchfi005./bic/zchfi005
+ association [1..1] to /bi0/tcomp_code as comp_codeT on $projection.comp_code = comp_codeT.comp_code
+{
+    key comp_code as comp_code,
+    key /bic/azdsfi00400.fiscyear as fiscyear,
+    key ac_doc_no as ac_doc_no,
+    key /bic/zchfi044 as ac_doc_item_1,
+    key /bic/zchfi045 as ac_doc_item_2,
+    key /bic/azdsfi00400./bic/zchfi000 as reverse,
+    ac_doc_typ,
+    pstng_date,
+    substring(pstng_date,1,6) as pstng_month,
+    doc_date,
+    comp_codeT.txtmd,
+    /bic/zchfi005 as zchfi005,
+    zchfi005.customer,
+    zchfi005.vendor,
+    /bic/azdsfi00400.amount as amount,
+    /bic/azdsfi00400.currency
+}
+where zchfi005.objvers = 'A'
+
+union all 
+
+ select from /bic/azdsfi02000 
+ association to /bic/pzchfi005 as zchfi005 on $projection.zchfi005 = zchfi005./bic/zchfi005 
+ association [1..1] to /bi0/tcomp_code as comp_codeT on $projection.comp_code = comp_codeT.comp_code
+ {
+    key comp_code as comp_code, 
+    key /bic/azdsfi02000.fiscyear as fiscyear,
+    key ac_doc_no as ac_doc_no,
+    key /bic/zchfi044 as ac_doc_item_1,
+    key /bic/zchfi045 as ac_doc_item_2,
+    key /bic/azdsfi02000./bic/zchfi000 as reverse,
+    ac_doc_typ,
+    pstng_date,
+    substring(pstng_date,1,6) as pstng_month,
+    doc_date,
+    comp_codeT.txtmd,
+    /bic/zchfi005 as zchfi005,    
+    zchfi005.customer,
+    zchfi005.vendor,    
+    /bic/azdsfi02000.amount as amount,
+    /bic/azdsfi02000.currency
+}
+where zchfi005.objvers = 'A'
+===========================
+http://scn.sap.com/community/abap/eclipse/blog/2014/02/04/new-data-modeling-features-in-abap-for-hana
+
+One more distinguish between CDS-HANA CDS-ABAP
+
+Can you define ABAP DDIC tables using CDS?
+this is currently not possible for ABAP developers but it is in the pipeline. Since most of SAP's software solutions already have/had their persistencies, the main focus has been on view building to enable code pushdown. Although there are plans to support defining database tables using CDS (with a similar integration in DDIC), I cannot give you a timeline.
+ 
+The CDS implementation on SAP HANA, however, already offers this possibility. If you are doing HANA native development, you SHOULD already be using CDS to create your database tables (entities) instead of HDBTable. But any database tables defined directly in the  HDB are not integrated into ABAP DDIC and the ABAP language.
+===========================
+Expose CDS-view to bex
+http://help.sap.com/saphelp_nw75/helpdata/en/c2/dd92fb83784c4a87e16e66abeeacbd/content.htm#loioc2dd92fb83784c4a87e16e66abeeacbd
+// use Annotation BW750 or above
+Analytics.query:true
+
+RSRTS_CDS_QUERY_CHECK
+
+Please check the generated BW InfoProvider (use transaction RSRTS_ODP_DIS with ODP Context “ABAP Core Data Service” and ODP Name ZAVDATA2_01 ). In particular, use the 'Check Metadata' function and inspect any potentially ignored associations.
+
+https://blogs.sap.com/2017/03/23/abap-cds-consumption-view-features-ultimate-test/
+
+==========================
+У BW-соединения в HANA Studio есть SQL Console!!!!
+как в DB02 (даже нельзя несколько SQL в одном экране вести...)
+============================
+Слова для поиска в SWDC ADT и BWMT
+Search for the SAP ABAP in Eclipse installation package and add it to the download basket.
+Search for the SAP BW Modeling Tools installation package and add it to the download basket.
+http://service.sap.com/sap/support/notes/1954169
+============================
+Remove of modification limitation
+Starting with the BW Modeling Tools 1.11 or higher and the SAP NetWeaver version 7.4 SP13 and 7.5 SP0, queries can be modified independent from the used creation tool. For instance queries created by the BW Modeling Tools can then be also modified with BEx, as long as no new features like the HANA view generation is used in the query.
+
+http://service.sap.com/sap/support/notes/2071109
+============================
+Теперь в BWMT Query designer видно свойства переменных в том же окне, а не после кучи кликов
+Там же можно мышкой перетаскивать элементы на области отчета
+============================
+Создание объектов типа 'IOBJ' не поддерживается BW740SP14 via BWMT
+============================
+aDSO standard. End routine structure
+      BEGIN OF _ty_s_TG_1,
+*      InfoObject: 0REQTSN Текущий номер транзакции запроса.
+        REQTSN           TYPE RSPM_REQUEST_TSN,
+*      InfoObject: 0RECORD Номер записи данных.
+        RECORD           TYPE /BI0/OIRECORD,
+*      InfoObject: 0DOC_NUM BW: номер документа.
+        DOC_NUM           TYPE /BI0/OIDOC_NUM,
+*      InfoObject: 0RECORDMODE BW: дельта-метод: режим обновления.
+        RECORDMODE           TYPE RODMUPDMOD,
+*      InfoObject: 0STORNO Индикатор сторно.
+        STORNO           TYPE /BI0/OISTORNO,
+*      InfoObject: 0CUSTOMER Номер клиента.
+        CUSTOMER           TYPE /BI0/OICUSTOMER,
+*      InfoObject: 0TCTCOUNT Число.
+        TCTCOUNT           TYPE /BI0/OITCTCOUNT,
+      END   OF _ty_s_TG_1.
+Need to fill 0REQTSN 0RECORD !!!
+
+for comparison - the same for standard DSO
+      BEGIN OF _ty_s_TG_1,
+*      Field: RECORD.
+        RECORD           TYPE RSARECORD,
+*      InfoObject: 0DOC_NUM BW: номер документа.
+        DOC_NUM           TYPE /BI0/OIDOC_NUM,
+*      InfoObject: 0RECORDMODE BW: дельта-метод: режим обновления.
+        RECORDMODE           TYPE RODMUPDMOD,
+*      InfoObject: 0CUSTOMER Номер клиента.
+        CUSTOMER           TYPE /BI0/OICUSTOMER,
+*      InfoObject: 0STORNO Индикатор сторно.
+        STORNO           TYPE /BI0/OISTORNO,
+*      InfoObject: 0TCTCOUNT Число.
+        TCTCOUNT           TYPE /BI0/OITCTCOUNT,
+      END   OF _ty_s_TG_1.
+
+===========================
+Join not allowed for CompositeProviders which can be used as PartProvider
+===========================
+* See report RSO_CONVERT_IPRO_TO_HCPR 
+Not work if  multiprovider has outflow or infoset as partprovider
+http://scn.sap.com/community/data-warehousing/bw/blog/2015/11/02/conversion-approach-of-composite-provider-from-copr-to-hcpr
+===========================
+HCPR : Union on top of a Join. Possible?
+This scenario is not supported with the CompositeProvider in BW Modeling Tools yet.
+With the next BW 7.50 feature package (RTC mid of 2016) you can add a CompositeProvider with a Join operation as PartProvider of a Union to another CompositeProvider. 
+===========================
+HCPR
+Every InfoProvider in a union is linked with the characteristic 0INFOPROV. This makes it possible to identify the involved provider, from which the data originates (like with a MultiProvider).
+With a join, only one of the two sides of the join can be linked with the characteristic 0INFOPROV. With a CompositeProvider, only the left part is linked with 0INFOPROV.
+===========================
+HCPR
+Can contains even SPRO!!!
+===========================
+How settings Addional grouping before join is affected in HCPR ?
+https://wiki.scn.sap.com/wiki/display/BI/COPR%3A+Unique+Join
+===========================
+HCPR
+Planning is possible (see Note 2091885)
+===========================
+HANA SDI SDQ overall
+http://scn.sap.com/community/developer-center/hana/blog/2014/11/27/hana-sp9-data-provisioning--overview
+
+Hana SDI is the framework to receive realtime changes, transform the data on the fly and load into Hana (among other things).
+
+SLT is one option to identify changes in SAP. It is used by the SLT frontend and can write data into Hana directly. But it can be used as source by Data Services or by SDI (once the SLT adapter for SDI is ready).
+Hana SDI is the framework to receive realtime changes
+
+Plus SDI has all the UIs for setup, creation, administration, monitoring in Hana, reusing the Hana features for that. These are not UIs that have been added to Hana Studio, we are using the architecture and the features Hana provides for this. Easy to do since SDI is a Hana native feature.
+If you use SLT for all, all the monitoring, setup etc is done in the SLT SAPGUI application (although some Integration is done in Hana Studio).
+
+One part of HANA SDI is the framework to receive real time changes.  
+Second part of HANA SDI is DP agent with different adapters whose purpose is to identify changes and send them to HANA.
+
+Это функция адаптера - определять изменения (через логи, поле). Потому что это пришло из мира Sybase SRS.
+This is part of the SAP Replication Server documentation which supplies the core of EIM/SDI
+
+Now it depends on what you need. If all you are doing is SAP to Hana 1:1 replication and ABAP is your way to go, all the nice features SDI provides, all the integration might not be worth that much, hence SLT by itself is fine. But if you want to do just a little bit more, I would use a SLT (or similar) adapter to provide the changes and Hana transformations to consume the change
+
+SLT можно подключить к HANA нгапрямую (В таблицу писать), так и через SDI-адаптер...
+
+customers will find the options SDI provides interesting still. In the sidecar scenario they might like the fact that SDI does not require the ERP to be brought into a read-only mode during the initial load, they might prefer the higher speed during initial load. And maybe they want to do some transformations later one.
+
+Or in short: Yes, there should be just one solution, but SLT is too mature and often all you need, hence we are not there yet.
+
+Typically SLT is installed on a separate ABAP server and this is additional cost(especially hardware). Since SDI is installed directly on HANA there is some cost saving. For demo scenarios involving HANA Side car model , do you see any issues if SDI is used for replication instead of SLT?. The SAP ECC system runs on DB2 and currently SDI Adapter is available for this. - Yes, that's exactly one of the use cases SDI is targeted at!
+
+The .hdbflowgraph ends up getting transformed in entirety into a calculation scenario and will be executed on the calculation engine including any of the DQ operations as well. This is where the CE optimizer (and also SQL optimizer) play roles in combining various operations etc.
+The main difference between these and other calculation scenarios is that with execution of these scenarios you also get information regarding what operations have processed, how many records were processed, what the current execution status is, etc.
+
+Let's make a distinction between "technically available" and "licensed".
+Since SDI is part of the core HANA installation, it's technically available wherever you have HANA SP09 (or higher): flowgraphs, replication tasks, DP server etc, are all part of you core HANA install, HANA Studio and the HANA Web IDE. It's only the "data provisioning agent" and monitoring DU that are separate downloads.
+But from a license point of view, SDI is NOT part of every HANA package. Below is the current state (July 2015) - keep in mind that licensing and packaging can change over time:
+- SDI is part of the high end "HANA Enterprise Edition".
+- For other HANA onPremise editions, you can buy the "HANA EIM" option which gives you SDI + SDQ.
+- For the HANA Cloud Platform, there is currently no package available yet that includes SDI, but target is to have this ready later this year.
+
+1.discard former SDA : through unixODBC along with dedicated ODBC client (one dedicated to each dbms source), running on same hana server
+2. set up a more generic adapter approach with the dataprovisionning agent (JRE) running on a separate (win/linux) server than hana, but the latter having a new dpserver process for syncing
+3. with the following advantages :
+- scalability
+- delta capturing via true realtime replication
+- oData adapters, RSS, twitter adapaters
+- SDK to build custom adapters to any other sources
+That is all correct, except maybe on the point 1).
+There are certain databases we have full control about and which we want a very deep integration with, no compromises. Say Sybase IQ?
+For these we will continue to have the ODBC based adapters still.
+
+My actual requirement is to add the virtual table as a target node(datasync) in flowgraphs and move data into it. Do you see any issues with this approach and is there some best practices to follow?
+I see. Virtual tables are not supported as targets of flowgraphs in SP9. In SP10 they are supported but still lots of limitations. SDI is really targeted to get data into Hana.
+
+Basically you have two options.
+1. Use SLT to copy the data from SAP to Hana and occasionally invoke a dataflow reading the data and loading the final table.
+2. Use SDI as target of SLT to stream the changes from SAP through all transformations right into the final target table.
+In the first version the missing piece is that SLT cannot trigger transformations in SLT. All it can do is insert/update/delete statements. And the question would be, why stage the data if there is no benefit?
+In the second version you need to connect SDI and SLT somehow - and that is done by the Adapter. Therefore I want to build an Adapter that translates all the Hana requests like "start capturing changes for KNA1 table" to the appropriate SLT FunctionModule calls, to start collecting changes. And SLT then does not insert the change into Hana but sends the changes to the Adapter which streams it further to SDI with all its transformations.
+
+==============
+ODP
+HANA System единой пока не нашел в списке SAP BW 7.5
+
+You can use Operational Data Provisioning (ODP) to connect the SAP HANA database of an ABAP system as the source system to the BW system. Communication is performed using RFC. With the ODP context for SAP HANA (HANA), analytic views, calculation views and associated attribute views are provided for replication into BW. This allows you to perform calculations in the SAP HANA database on the views, before they are loaded into BW. These calculations could be currency translations and restricted key figures or key figures calculated before aggregation for example, or joins and unions.
+
+Only information models as sources are available for ODB-HANA system
+
+The SAP HANA database is accessed using the BW database user (SAP<SAPSID>)
+
+Transferring data from the SAP HANA database with ODP is not supported for the following:
+* Hierarchies in attribute views
+* VirtualProviders based on the data transfer process
+* Real-Time Data Acquisition
+=========================
+ODQ ODP
+Срок хранения
+Retention Period for Data in the Delta Queue. There are three different period:
+To recover a delta process that has been canceled:This is the minimum retention period for data in the queue tables that is flagged as retrieved in the delta process or as canceled. Once this period has expired, all data flagged as retrieved or invalid is deleted from the delta queue by a periodically scheduled reorganization process.
+A delta process can always be reset or repeated at this time for individual subscribers.
+The minimum retention period is given in hours. The default setting is 24 hours.
+
+For data with low relevance:Once this period has elapsed, the periodic reorganization process deletes all data in the queue that meets the following conditions:
+It has not yet been declared as retrieved or invalid
+All subscribers have subscribed to it with low relevance.
+This period is given in days. The default is 1 week.
+
+For data with medium relevance:Once this period has elapsed, the periodic reorganization process deletes all data in the queue that meets the following conditions:
+It has not yet been declared as retrieved or invalid
+All subscribers have subscribed to it with at most medium relevance.
+This period is given in days. The default is 31 days (4 weeks plus an extra weekend).
+
+Classification of relevance of data
+Data that has not yet been retrieved and is business critical is never automatically deleted by the reorganization process.
+At present, the system does not make any relevance-related distinction of delta data. All data in the delta queue is considered business-critical and is therefore not deleted until it has been flagged as either retrieved or invalid.
+
+Because of the particularly high volume expected, data from delta initialization requests and standard requests is also classified as being of low relevance.
+
+Scheduling the Reorganization Run
+When a delta queue is activated, the reorganization run (program ODQ_CLEANUP) is scheduled automatically if there is no periodic scheduling yet. The periods specified above can be modified either by manually scheduling them before the first delta request or by subsequently changing the automatically scheduled job. To do this, you can call Job Administration directly from program ODQ_CLEANUP or perform "rapid scheduling" with modified selection parameters.
+In the default setting, the reorganization run is scheduled to run once daily at between one and two in the morning (in system time). The start time and period can be changed if required.
+There is no automatic scheduling if periodic scheduling has been performed for program ODQ_CLEANUP in the same client. To delay reorganzation by a certain time, for troubleshooting purposes for example, the scheduled job must therefore be reset from status Released to status Planned or Released/Suspended. If the scheduled job is deleted, it is rescheduled next time a delta initialization or a standard request is made.
+
+Dependencies
+If data with low or medium relevance that has not yet been declared retrieved or invalid is deleted by the periodic reorganization process, the delta processes (subscriptions) that belong to it are also reset. These then have to be re-initialized.
+
+==============
+
+Tables RODP* for ODP
+Table ROOSATTR - EXPOSE_EXTERNAL = X – разрешен для ODP
+По умолчанию – экстракторы активны и в ERP таблица ROOSATTR заполнена…
+Задание запускается видимо после чтения из первого источника (но через ODP- исходную систему в BW)
+
+=================
+http://ims-bw:8080/wiki/index.php/BW-MT-HCPR
+WIKI about infoprovider
+==================
+class ZCL_RSR_ZCHBD002_F4_RESTRICT definition
+  public
+  final
+  create public .
+
+public section.
+
+*"* public components of class ZCL_RSR_ZCHBD002_F4_RESTRICT
+*"* do not include other source files here!!!
+  interfaces IF_BADI_INTERFACE .
+  interfaces IF_RSR_VARIABLE_F4_RESTRICT .
+protected section.
+*"* protected components of class ZCL_RSR_ZCHBD002_F4_RESTRICT
+*"* do not include other source files here!!!
+private section.
+*"* private components of class ZCL_RSR_ZCHBD002_F4_RESTRICT
+*"* do not include other source files here!!!
+ENDCLASS.
+
+
+
+CLASS ZCL_RSR_ZCHBD002_F4_RESTRICT IMPLEMENTATION.
+
+
+METHOD if_rsr_variable_f4_restrict~get_restriction_flat.
+  DATA: l_s_range LIKE LINE OF c_t_range.
+
+  CASE i_vnam.
+    WHEN 'ZCHBD002_001'.
+      "READ TABLE i_t_compid WITH TABLE KEY table_line = '0D_FC_AE_VAR_Q02' TRANSPORTING NO FIELDS.
+      l_s_range-iobjnm = i_iobjnm.
+      l_s_range-sign   = 'I'.  "including
+      l_s_range-option = 'CP'. "between
+      l_s_range-low    = 'B*'. " in internal format
+      CLEAR l_s_range-high.
+      APPEND l_s_range TO c_t_range.
+    WHEN 'ZCHBD002_002'.
+      l_s_range-iobjnm = i_iobjnm.
+      l_s_range-sign   = 'I'.  "including
+      l_s_range-option = 'CP'. "between
+      l_s_range-low    = 'F*'. " in internal format
+      APPEND l_s_range TO c_t_range.
+      CLEAR l_s_range-high.
+      l_s_range-sign   = 'E'.  "including
+      l_s_range-option = 'EQ'. "between
+      l_s_range-low    = 'FACT'. " in int
+      APPEND l_s_range TO c_t_range.
+    WHEN 'ZCHBD002_004'.
+      l_s_range-iobjnm = i_iobjnm.
+      l_s_range-sign   = 'I'.  "including
+      l_s_range-option = 'CP'. "between
+      l_s_range-low    = 'F*'. " in internal format
+      APPEND l_s_range TO c_t_range.
+      CLEAR l_s_range-high.
+      l_s_range-sign   = 'E'.  "including
+      l_s_range-option = 'EQ'. "between
+      l_s_range-low    = 'FACT'. " in int
+      APPEND l_s_range TO c_t_range.
+  ENDCASE.
+
+ENDMETHOD.
+
+
+METHOD IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_HIER.
+  RETURN.
+ENDMETHOD.
+
+
+METHOD IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_NODE.
+  DATA: l_s_node LIKE LINE OF c_t_node,
+        l_s_hier LIKE LINE OF c_t_hierarchy.
+
+  IF i_vnam EQ '0D_FC_N09'.
+    READ TABLE i_t_compid WITH TABLE KEY table_line = '0D_FC_AE_VAR_Q01' TRANSPORTING NO FIELDS.
+    IF sy-subrc = 0.
+      l_s_node-nodename = 'SALES REPRESENTATIVE 2'.
+      l_s_node-niobjnm = '0HIER_NODE'.
+      APPEND l_s_node TO c_t_node.
+    ENDIF.
+    IF lines( c_t_hierarchy ) > 1.
+* it is possible to delete entries in hierarchy tab, if it is not unique before value help.
+      READ TABLE c_t_hierarchy WITH KEY hienm = '0D_FC_SEMP_HIER002' INTO l_s_hier.
+      IF sy-subrc = 0.
+        DELETE c_t_hierarchy.
+        APPEND l_s_hier TO c_t_hierarchy.
+* now hierarchy 0D_FC_SEMP_HIER002 is shown in value help
+      ENDIF.
+    ENDIF.
+  ENDIF.
+ENDMETHOD.
+ENDCLASS.
+========================
+Search in BW
+TCode RSOSM
+Note 2152359 - BW search/input help for InfoObjects returns no results
+
+должен быть заполнен пакет SAP HANA в RSOSM
+system-local.bw.bwsearch.SAP<SID>
+и тогда все перегенерирусется и будет ОК
+
+documentation
+
+https://help.sap.com/saphelp_nw74/helpdata/en/71/1b917059a9437092d6cfe07ccb06c5/content.htm?frameset=/en/7c/274bc0424440a9ac3a5532def58a41/frameset.htm&current_toc=/en/89/71b01ce1f44e95a860a6c3f7dda911/plain.htm&node_id=162&show_children=false
+
+======================
+Alert framework
+ALRTDISP
+ALRTMON
+ALRTCATDEF
+https://help.sap.com/saphelp_nw74/helpdata/en/47/fe7acb40e23c8be10000000a42189c/content.htm
+===================
+Open ODS view
+Note 2199480
+BW-WHM-DBA-ODSV
+
+By default, currency-related keyfigures are stored with two decimals on the database (Internal format). As some currencies might require more or less accuracy, in the external format (screen output) the decimal point can be shifted according to the settings in table TCURX.
+
+In the context of the Open ODS View, BW only executes a currency shift if you associate a BW Keyfigure of Type "Amount" to a keyfigure field in the ODS View. As a consequence, you need to make sure that the corresponding source field needs to contain the values in the "internal" format if a BW Keyfigure of Type "Amount" is associated.
+
+If the source data provides external format and you want to associate a BW Keyfigure of Type "Amount", then you need to manually convert the data from external to internal format using HANA SQL function CONVERT_CURRENCY or the SQLScript Built-In function CE_CONVERSION. As conversion step, SHIFT_BACK converts the external to the internal format.
+
+Example in SQL:
+
+create column table "CURR_CONV" ("AMO" decimal(17,2), "CUKY" NVARCHAR(3));
+insert into "CURR_CONV"  values (300.00,'IDR');
+
+create view "CURR_CONV_VIEW" ( "AMO_INTERNAL", "AMO_EXTERNAL", "CUKY")
+as select
+  CONVERT_CURRENCY( amount=>"AMO",
+   "SOURCE_UNIT_COLUMN" => "CUKY",
+      "TARGET_UNIT_COLUMN" => "CUKY",
+  "SCHEMA" => 'SAPSID',
+  "STEPS" => 'SHIFT_BACK') as "AMO_INTERNAL",
+  "AMO" as "AMO_EXTERNAL",
+  "CUKY"
+from "CURR_CONV";
+
+select * from "CURR_CONV_VIEW";
+
+==========
+
+определить тип ADSO можно по его xml-описания
+==========
+Easy Query
+https://wiki.scn.sap.com/wiki/display/BI/OT-BICS-EQ
+Function RSEQ_START_GENERATION: generation of function module and web service stub
+allows fast generation of an Easy query function adn web service
+can be used to check error message in more details
+==========
+Ракурс в ANalysis не сохранить, если активна стандартная система переносов... Ну что за нах...
+
+Стандартная система переносов активна. Сохранение невозможно. (RSBOLAP-019, BWD):
+Диагностика
+The standard transport is switched on.
+Системные операции
+The object cannot be saved.
+Процедура
+Switch off the standard transport and create a transport request for "Transport Requests BEx".
+You can do this in the Transport Connection functional area of the Data Warehousing Workbench by choosing Edit -> Execute Transport.
+============
+
+в ФМе rsdmd_mdmt поставить брейк-поинт в районе 280 строки, в дебуггере поменять l_use_old_ui на Х
+=============
+Design Studio
+
+Else you can do it by not posting the STARTUP script for the second dropdown and you can do it same by calling it in on ON SELECT EVENT of dropdown_1 as below:
+ 
+DS_1.setFilter("ROUTE_NO",DROPDOWN_1.getSelectedValue());
+ 
+DROPDOWN_2.setItems(DS_2.getMemberList("BUSES", MemberPresentation.INTERNAL_KEY, MemberDisplay.TEXT, 20,"ALL"));
+=============
+var lv_sel = "";
+lv_sel = "{\"0CALYEAR\":[\"" 
+       + DROPDOWN_2.getSelectedText() + "\",\"" 
+       + DROPDOWN_3.getSelectedText() + "\"]," 
+       + RADIOBUTTONGROUP_1.getSelectedValue() + ","
+       + DROPDOWN_1.getSelectedValue() + "}";
+// DROPDOWN_2.getSelectedText()+ "\"],"  + DROPDOWN_2.getSelectedValue()+  "}";
+INFOCHART_1.setDataSelection(lv_sel);
+TEXT_1.setText(lv_sel);
+=============
+
+REPORT ZTABITERATOR02_DEMO.
+
+SELECT carrid, airpfrom, seatsmax FROM sflights
+         INTO TABLE @DATA(lt_flights).
+
+cl_demo_output=>write( lt_flights ).
+
+DATA:
+      lt_res      LIKE lt_flights,
+      ls_sflights LIKE LINE OF lt_flights
+      .
+
+LOOP AT lt_flights INTO DATA(ls_flights)
+  GROUP BY ( carrid   = ls_flights-carrid
+             airpfrom = ls_flights-airpfrom
+             size     = GROUP SIZE )
+   ASCENDING
+   ASSIGNING FIELD-SYMBOL(<fs_group01>).
+
+  ls_sflights   = VALUE #( carrid = <fs_group01>-carrid
+                         airpfrom = <fs_group01>-airpfrom
+                         seatsmax = REDUCE #( INIT sum = 0
+                                      FOR m IN GROUP <fs_group01>
+                                        NEXT sum = sum + m-seatsmax ) ).
+  APPEND ls_sflights TO lt_res.
+ENDLOOP.
+
+cl_demo_output=>write( lt_res ).
+cl_demo_output=>display( ).
+
+https://scn.sap.com/community/abap/blog/2014/10/02/abap-news-for-740-sp08--grouping-internal-tables
+
+=============
+FOR ALL ENTRIES
+
+t1 (f1, f2, kf1) PK (f1,f2)
+1;1;100
+1;2;200
+2;1;300
+
+it (f1)
+1
+
+SELECT f1, kf1 FROM t1 
+ FOR ALL ENTRIES IN it
+ WHERE f1 = it.f1
+1;100
+
+
+SELECT f1, f2, kf1 FROM t1 
+ FOR ALL ENTRIES IN it
+ WHERE f1 = it.f1
+1;1;100
+1;2;200
+
+
+вернет разные результаты
+
+=============
+
+Если внутри метацепочки есть красный статус и она дошла до конца, то общий статус метацепочки красный, и в главной цепочке, из  которой вызывается метацепочка, дальнейше продолжение возможно только при типе соединения "ЛЮБОЙ". Если стоит тип соединения ЗЕЛЕНЫЙ, то дальнейшее выполнение не будет выполняться.
+
+============
+
+НА маркетинговых презентациях не подчеркивается, что продукт не умет делать все на всех комбинациях окружения, куда входит браузер (тип и версия), версия, vendor и тип ОС (настольная, серверная, мобильная), тип и версия платформы (HANA, NW, BI Platform) и даже доступный язык приложения
+См. например PAM for SAP Design Studio
+
+============
+Нельзя сохранят ракурсы!!! если активна стандартная система переносов.
+
+Стандартная система переносов активна. Сохранение невозможно. (RSBOLAP-019, BWD):
+Диагностика
+The standard transport is switched on.
+Системные операции
+The object cannot be saved.
+Процедура
+Switch off the standard transport and create a transport request for "Transport Requests BEx".
+You can do this in the Transport Connection functional area of the Data Warehousing Workbench by choosing Edit -> Execute Transport.
+
+=============
+Если открыть тяжелый эксель и одновременно работать в Analysis, то Analysis будет сильно тормозить. Надо закрыть тяжелый эксель ИЛИ отключить расчет формул на лету
+============
+icon trend
+
+Embedded icons
+http://scn.sap.com/community/businessobjects-design-studio/blog/2014/09/28/using-image-uris-in-sap-design-studio
+https://www.iconfinder.com/icons/466972/arrow_direction_positive_trend_up_icon#size=128
+
+===========
+Design Studio Jump into another app
+
+APPLICATION.openNewWindow('/BOE/OpenDocument/opendoc/openDocument.jsp?sIDType=CUID&iDocID=AQ2Ykg_GBj9Ov2Lw.Wt2WVo&X_param1=2016');
+Global script variable X_param1 with URL parameter = True
+On startup script TEXT_2.setText(X_param1);
+=============
+Design Studio script modules
+Math
+Convert
+Layout
+и др. См. по списку по ctrl-space в коде
+======
+расчет отклонения в цикле по значениям измерения DS. Приглось рассчитывать в DS, тк. Bex не может вычислять эту формулу для НИ. BEx НИ делает только для отображения.
+Только internalKey в качестве ключей. Иначе отображаемое представление показывается.
+Все ключевые поля (в строках и столбцах) должны быть перечислены в JSON-выражении.
+
+var lv_t = "C";
+var dimkey = DS_4.getMembers("0CALMONTH", 12);
+var lv_s = "";
+var lv_fa = 0.00;
+var lv_pl = 0.00;
+var lv_delta = 0.00;
+
+DS_4.setFilter("ZCHRE014", lv_t);
+dimkey.forEach(function(element, index) {
+  lv_fa = DS_4.getData("00O2TGU3YK49BXSRXD8IIDBRP", {
+  	"0CALMONTH": element.internalKey,
+  	"ZCHRE014": lv_t }).value;
+  lv_pl = DS_4.getData("00O2TGU3YK49BXSRXD8IIDOET", {
+  	"0CALMONTH": element.internalKey,
+  	"ZCHRE014": lv_t }).value;
+  lv_delta = ( (lv_fa) / (lv_pl) - 1) * 100;
+  lv_s = lv_s + " " + lv_delta;
+}
+);
+
+TEXT_1.setText(lv_s);
+
+=====================
+
+{"0CALYEAR":"2016", - работает ОК
+{"0CALYEAR":2016, - не работает.
+НО
+{"0CALMONTH2":"3", - работает ОК
+{"0CALMONTH2":3, - работает OK.
+================
+Категория, определенная в BI Platform, отображается отдельной группой в меню  BI Mobile, в группе All Reports
+============================
+left = 0
+top = 0
+width = auto
+hieght = auto
+bottom = 0
+right = 0
+
+такой порядок задания свойств элемента, чтобы он выравнвался по владельцу и занимал всю площадь
+==============================
+To set filter by date range  -
+ DS_1.setFilter("Z_Date",{"low":DateFrom.getDate(),"high":DateTo.getDate()});
+ 
+To set date applied to show as text -
+ Date_SelectedText.setText(DS_1.getFilterText("Z_Date"));
+=======================
+создание CSS3 patterns
+https://patternizer.com/izfa
+http://www.awwwards.com/background-patterns-designs-and-resources-for-websites.html
+================
+CSS Grid
+https://css-tricks.com/snippets/css/complete-guide-grid/
+http://css-live.ru/css/zolotaya-rybka-css3-grid-layout.html
+===================
+Binding CSS with formatter function
+http://scn.sap.com/community/businessobjects-design-studio/blog/2015/10/29/bo-design-studio-css-tips-tricks-creating-alerts-by-data-cell-binding-in-css-class
+===============
+Символ вместе с текстом (текст по правому краю, символ - тоже.)
+.kpi-value-green {
+  color: green;
+  font-weight: bold;
+  text-align: right !important; 
+}
+
+.kpi-value-green::AFTER {
+/* margin-right: 10px; */	
+float : right;
+margin-left: 10px;
+content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAOCAYAAADwikbvAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHdJREFUeNpiYBh+IGUBewA+eSY8GvuB1HognYBLDSMOjSAN85GEDOck/LxAUDNQowGQOo8m/AGIFYEGfMDpbKBGBSC1H4tjBEDiQHkBrJqhEuuhCrEBkIv6cdncD1WADyQALWlA8TNUoJ6EWAwE+n/DEE2BAAEGALGdHjLKo8W4AAAAAElFTkSuQmCC);
+}	
+=============
+https://www.base64-image.de 
+
+decoder jpg -> mime
+
+http://www196.lunapic.com/editor/
+transparency editor
+
+======
+стиль для grid и подстановка текста напрямую в ячейки GRID из CSS
+
+.basicGrid td{
+  border:1px solid black;	
+}
+
+.basicGrid2 td#__cell0::BEFORE { 
+ content: "Январь";
+}
+.basicGrid2 td#__cell1::BEFORE { 
+ content: "Февраль";
+
+для GRID указывать классы через пробел
+
+==============
+<html>
+ <head>
+  <meta charset="utf-8">
+  <title>text-align</title>
+  <style>
+   div {
+    border: 1px solid black; /* Параметры рамки */
+    padding: 5px; /* Поля вокруг текста */
+    margin-bottom: 5px; /* Отступ снизу */
+   }
+   #left { text-align: left; }
+   #right { text-align: right; }
+   #center { text-align: center; }
+   .content {
+    width: 75%; /* Ширина слоя */
+    background: #fc0; /* Цвет фона */
+   }
+  </style>
+ </head>
+ <body>
+  <div id="left"><div class="content">Выравнивание по левому краю</div></div>
+  <div id="center"><div class="content">Выравнивание по центру</div></div>
+  <div id="right"><div class="content">Выравнивание по правому краю</div></div>
+ </body>
+</html>
+============
+BI Mobile Application on iPhone - Только вертикальная ориентация (portrait)
+=============
+Чтобы на графике отображались (RESULT_MEMBERS), надо включать SHOWTOTALS = TRUE
+============
+Query as Infoprov
+То, что в фильтрах в области default vales - игнорируется. Фильтруется только по тому, что в области Фильтров
+Все свободные признаки участвуют в развертке при выгрузке
+Формулы поверх ограниченных показателей не вычисляются (результат = всегда 0)
+============
+Design Studio
+externalKey как атрибут класса Dimension возвращает \( для ( в тексте ключа. А internalKey возвращает все правильно.
+============
+
+замена цвета шрифта в подписях на графике тепловом. Меняем CSS-класс у графика, а в классе - перекрытие цвета
+
+.hgpercent g.v-morphable-label {
+	fill: blue;
+}	
+.hgpercent g.v-axis-label-wrapper {
+	fill: black;
+}
+=============
+// APPLICATION.alert(lv_calmonth);
+=========
+DEsign Studio Datasource не обрабатывает значения переменных Bex = #
+Если ставиль переменной несуществующее значение, то оно молча игнорируется (т.е. как будто бы фильтра нет)
+==============
+DS_HEAT.setFilter("0CALMONTH", {
+	"low": "201601", 
+	"high": "201606"
+});
+==============
+2 цепочки процессов. Обе выполняются последовательно из главной. Вторая выполняется после 1-ой в любом случае (зеленый или красный). Так вот, если 1-ая красная, то вторая - выполнится. Но если 1-ую исправить и продолжить, то вторая пойдет выполняться еще раз.
+=============
+SID таблица в BW4/HANA имеет тип INTEGER
+The INTEGER data type stores a 32-bit signed integer. The minimum value is -2,147,483,648. The maximum value is 2,147,483,647
+
+==================
+
+_SYS_REPO нужны полномочия WITH GRANT OPTION на все схемы, чьи объекты включены в информационные модели
+
+I just wanted to add that you can dig a little deeper into the indexserver_*.trc files under the diagnosis tab if you are having some issues. I forgot that I was trying to have my calculation view reference tables in two different schemas, thus I had to have my user give _SYS_REPO access to both schemas:
+
+[16674]{448738}[113/232191] 2014-05-02 14:46:56.091398 d CalcEngine       ceAuthorizationCheck.cpp(01379) : AuthorizationCheckHandler::explain:
+
+- User object for '_SYS_REPO' successfully received
+
+- NOT authorized on 'SALES_FIGURES'
+
+- Authorized on 'REMOTE_B3Y_SALES_FIGURES'
+
+- no authorization required for 'Union_1'
+
+- no authorization required for 'finalAggregation'
+With the above log, I could see that I had to grant select to "SALES_FIGURES" which was under a different schema than "REMOTE_B3Y_SALES_FIGURES".
+======================
+
+SABAPDEMOS - пакет с кучей примеров на ABAP
+В частности, пример с параллелизацией parallel
+=====================
+WebIntelligence, WebI.
+Ограничения на данные в BEx отчете в разделе "Свободные признаки" не рассматриваются WebI как фильтры
+Надо переносить в область Фильтры, тогда они в WebI будут применяться :(
+====================
+ERP
+Табл.    LFC1 - по кредиторам обороты и сальдо (LNC3 -авансы по коду ОГК) 
+       KNC1 - по дебиторам обороты и сальдо (KNC3 авансы по коду ОГК)         
+===================
+Restrictions for SAP HANA smart data access
+https://launchpad.support.sap.com/#/notes/1868209/E
+
+Virtual tables are supported in calculation views only.
+Also, there are parameter settings which have been made available for SAP HANA smart data access in SAP HANA Studio, under Configuration->indexserver->smart_data_access. These parameters are for use  only by SAP Support, and not meant for end-user-access.
+=======================
+2092196 - How-To: Terminating Sessions in SAP HANA
+======================
+2388483 - How-To: Data Management for Technical Tables
+=======================
+2358741 - Corrections ABAP CDS Delta Generic Delta
+=======================
+Transient queries are not created via the Bex Query Designer. Thus, there is no information to be found in the so called RSZ-tables. This means, these query definitions cannot be viewd in the Bex query designer. When the query is started, a BADI implementation is called that actually delivers the information usually provided by the RSZ-tables. Technically, this can be seen in function module RZI_COMPONENT_INIT in form read_query_from_badi.
+
+https://wiki.scn.sap.com/wiki/display/BI/OT-TransientQuery
+=======================
+2330582 - ABAP CDS: use V1 or V2 per annotation
+
+Starting with SAP BW 7.50 the ODP based on ABAP CDS views uses the @ObjectModel annotations to classify assoсiations. With the new annotation @Analytics.hints: 'useV1' it is possible to switch back to the logic of SAP BW 7.40.
+=============
+DEVACCESS - ТАБЛИЦА с ключами разработчика
+============
+удалять пробелы, табуляции
+            REPLACE_REGEXPR( '\s.+' IN
+               CASE WHEN SUBSTRING(RT_PROMO,1,10) IN ( 'SR10_SECON','SR10_ROUND' ) THEN ' '
+                    WHEN SUBSTRING(RT_PROMO,1,5) = 'SR10_' THEN SUBSTRING( RT_PROMO, 6)
+                    ELSE RT_PROMO
+               END
+               WITH ''
+            )  as RT_PROMO,
+==================
+2215947 How to Set Navigation Attributes for an ADSO or HCPR
+
+ASDO and HCPR are new infoproviders that can only be modeled in BW Modeling Tool (a perspective in HANA Studio), 
+the user interface is different from traditional RSA1. You mignt have some difficulty to find some settings.
+It is not possible to set navigation attributes in aDSO.  It is only possible to set navigation attributes in the output of a HCPR.
+
+в HCPR, в признаке с нав.атр. используются нав.атр этого признака. А не других, которые могут быть соединены с этим.
+
+=================
+BW751SP00 = BW750SP05
+2404122 - Check for BW Upgrade to BW4HANA
+=================
+BW/4HANA Starter Add-On. Об этом компоненте, его возможностях и ограничениях см в ноте 
+2189708 - SAP BW/4HANA Add-On Handling and Usage
+2246699 - SAP BW/4HANA Starter Add-On - Pre-Requisites/Installation/De-Installation/Update.
+=================
+Choose Start of the navigation path Data Warehousing Workbench 
+Next navigation step Administration 
+ Next navigation step External SAP HANA View 
+  End of the navigation path. 
+This opens the transaction for the administration of external SAP HANA views.
+
+RS2HANA_VIEW - генерировать роль и др. настройки для доступа к данным BW через модели в HANA
+RS2HANA_GEN - генерация (выравнивание) присвоений полномочий между BW-омоделями, HANA-омоделями и HANA-и BW-пользователями
+1927767 - Mass DBMS User Management
+
+У сгенерированного view надо поставить Classical Analytic Priviledge (иначе ошибка "нет авторизации", 
+даже если есть роль MODELING с правами на все нужные схемы и на все объект _SYS_BI_CP_ALL
+При переактивации модели в BW свойство устанавливается в SQL Analytic Priviledge, так что надо повнимательней
+
+При снятии галочки HANA-model в инфообъекте/ADSO, при переактивации автоматически удаляются соотв. HANA-Объекты сами и из роли
+
+При создании аналитической привилегии указывается ее тип: classic или SQL.
+
+Analytic Privileges
+https://help.sap.com/saphelp_hanaplatform/helpdata/en/db/08ea0cbb571014a386f851122958b2/content.htm?frameset=/en/1b/f69f1dfcc6408783bce441a758f571/frameset.htm&current_toc=/en/34/29fc63a1de4cd6876ea211dc86ee54/plain.htm&node_id=417&show_children=false
+
+Step-by-step guide for authorisations (min)
+http://www.sapstudent.com/hana/sap-hana-privileges-required-by-a-business-user
+
+Mega thread about "Not authorized"
+https://archive.sap.com/discussions/thread/3868985
+
+=====================
+CDS code
+
+https://blogs.sap.com/2016/03/10/sap-s4hana-embedded-analytics-a-detailed-walkthrough-part-13/
+https://blogs.sap.com/2016/08/17/basic-configurations-for-activate-embedded-analytics-in-s4hana-op-1511/
+
+
+2289865 - Configuration steps for S/4 HANA Analytics
+2171270 - INTERNAL: Troubleshooting S_RS_ZEN and OData service RSAO_ODATA_SRV
+ need to manually activate service
+https://support.wdf.sap.corp/sap/support/message/1570031048
+https://support.wdf.sap.corp/sap/support/message/1570173317
+
+===============
+Service not found RSAO_ODATA_SRV
+
+activate EQManager 
+execute task list for rsao_odata_srv 1
+see
+https://websmp106.sap-ag.de/~sapidp/012002523100012419282015E/frameset.htm?be49ea780ce441e8a6434dd85a24f525.html
+================
+Assign a role with authorization object S_RS_AUTH, field BIAUTH=0CDSALL to the endusers who should access any smart business app.
+================
+report RS2HANA_AUTH_RUN - Для добавления в цепочку и периодического выравнивания полномочий анализа в BW и в HANA
+================
+Smart Business App Config
+https://blogs.sap.com/2017/02/03/fiori-analytical-app-configuration-steps-for-beginners/
+================
+OLAP authorisations wiki
+https://wiki.scn.sap.com/wiki/display/BI/OLAP+Authorizations
+================
+SQL HANA Analysis Auth
+https://wiki.scn.sap.com/wiki/display/BI/BW2HANA+authorization+generation%3A+Example+I
+
+Checking the analytic privilege in more detail we can see that the privilege is designed as "procedure" which you can find in the schema "_SYS_BIC":
+
+как отключить?
+
+деактивировать объект полномочий анализа
+удалить свойство релевантен для авторизации
+переактивировать признак и инфопровайдеры с ним (модели в HANA)
+RS2HANA_GEN
+=================
+2103008 - HANA System cannot be attached to BW Modeling Tools due to network configuration
+=================
+SCTS_HTA - SAP HANA Transport for ABAP.
+Включение объектов контента в транспортный запрос
+=================
+SADL (Service Adaptation Description Language) is an ABAP technology that enables the consumption of entity relationship-like ABAP data models in various scenarios with a common development experience based on a model-driven approach.
+Therefore, SADL enables fast read access to data for scenarios on mobile and desktop applications based on SAP HANA using query push-down.
+
+http://help.sap.com/saphelp_nw75/helpdata/en/13/d9849973dd4174adaa375f568984bf/content.htm?frameset=/en/be/cb201641804877bca7c21b619fbc3c/frameset.htm&current_toc=/en/43/5550a1f8a75f6be10000000a1553f6/plain.htm&node_id=4&show_children=false
+
+ObjectModel.foreignKey.association
+Defines association to a view that represents a value list/check table of the annotated filed. The annotated field must be valuated as equal to the annotated representative key field of the target view. The maximum target cardinality of the association has to be 1.
+Scope: [ELEMENT]
+Evaluation Runtime (Engine):
+Analytic Manager: Uses associated view as DIMENSION view for the annotated field.
+SADL: Derives a default value help support from the foreign key relationship.
+
+То есть для доступа через SADL это аннотация включает F4-support. Для Analysis - обозначение изменения
+===========================
+RUTDDLSSHOW2
+check CDS report in SAP GUI
+==============
+@Analytics.query: true - генерирует транзиентный провайдер => можно увидеть в Analysis. + Генерирует OData сервис. В HANA Studio появляется кнопочка напротив аннотации. По ней можно перейти в сервси.
+
+go to transaction /IWFND/MAINT_SERVICE
+Click on the 'Add Service' button at the top of the page
+Search for service (don't forget to choose right source system (not local))
+select service and add then. You will be prompted to add package to the service several times
+(prerequisites: executing report for autosetup OData (SE38: EQ_RS_AUTOSETUP) under DDIC user
+
+@VDM.Viewtype #CONSUMPTION. Позволяет делать модель только поверх других view!!! Поверх таблицы не получится сделать. Для порядка.
+
+2244649 - SAP Netweaver Gateway Odata service transport FAQ
+
+==============
+CDS
+   cast( 0 as abap.dec(13,2)) as nafab, 
+==============
+Tcodes: CG3Y and CG3Z
+download and upload file to|from appserver ABAP
+===============
+
+View browser - можно выгрузить CDS-views в Excel вместе с компонентами
+===============
+Fiori
+Добавлять каталог в роль - и можно видеть плитки и выбирать их в группы на fiori (любые группы)
+Добавлять группу в роль - сразу добавляется группа в меню на страницу
+2383335 - Cannot Add KPI Tiles to Launchpad
+
+Catalog
+A catalog is a set of apps you want to make available for one role. Depending on the role and the catalogs assigned to the role, users can browse through the catalogs and choose the apps that they want to display on the entry page of the SAP Fiori launchpad
+
+Group
+A group is a subset of apps from one or more catalogs. Which tiles are displayed on a user’s entry page depends on the groups assigned to the user’s role. In addition, the user can personalize the entry page by adding or removing apps to pre-delivered groups or self-defined groups.
+
+Roles (PFCG): Provides access to the assigned groups and catalogs.
+
+=============
+
+CDS - это принцип SAP Query с визуализацией в BW
+=============
+Мандант в CDS
+https://blogs.sap.com/2015/11/25/abap-news-for-release-750-environment-information-in-abap-cds/
+(as 750)
+@AbapCatalog.sqlViewName: ‘DEMO_CDS_SESSVAR’ 
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+define view demo_cds_session_variables
+as
+select
+   from demo_expressions
+     { id,
+       $session.user            as system_user,
+       $session.client          as system_client,
+       $session.system_language as system_language }
+==============
+*читаем фильтр из DTP (filter)
+*если в настройках переменной Z_BB_LFL_NOT_USE_COND = 'X' нет,
+*значит используем фильтр
+if l_tvarv <> 'X'.
+  lt_dtp_range = p_r_request->GET_TH_RANGE( ).
+  clear r_calday.
+  clear r_cfo.
+
+  loop at lt_dtp_range into ls_dtp_range.
+    case ls_dtp_range-FIELDNM.
+      when 'CALDAY'.
+        ls_range-sign   = ls_dtp_range-SIGN.
+        ls_range-option = ls_dtp_range-OPTION.
+        ls_range-low    = ls_dtp_range-LOW.
+        ls_range-high   = ls_dtp_range-HIGH.
+        append ls_range to r_calday.
+      when '/BIC/ZBPC_CFO'.
+        ls_range-sign   = ls_dtp_range-SIGN.
+        ls_range-option = ls_dtp_range-OPTION.
+        ls_range-low    = ls_dtp_range-LOW.
+        ls_range-high   = ls_dtp_range-HIGH.
+        append ls_range to r_cfo.
+    endcase.
+  endloop.
+==============
+St06 - просмотр данных по серверу приложений ABAP
+=============
+FM DB_DBUSER показывает db user сервера приложений
+=============
+STC01 запуск task list-ов  SAP_BW4_SETUP_SIMPLE
+2417445 - BW/4HANA: UNCAUGHT_EXCEPTION due to uninstalled technical content
+
+Table RSTCO_OBJ_ACT Activated objects (techn. content)
+
+1969105 - Master data maintenance for InfoObjects does not start
+The ICF services as described in SAP Note 1088717 in "Using WDA applications" must be active.
+
+In addition to these general WDA services, the following application services must be activated in the ICF tree:
+/default_host/sap/bc/webdynpro/sap/RSDMDM_MD_MAINTENANCE_APP
+/default_host/sap/bc/webdynpro/sap/RSDMDM_MD_NEW_APP
+/default_host/sap/public/myssocntl
+=============
+https://blogs.sap.com/2016/04/28/how-to-create-and-maintain-info-objects-using-eclipse-data-modelling-for-sap-bw-75/
+=====================
+*----------------------------------------------------------------------*
+*       Inverse method inverse_end_routine
+*----------------------------------------------------------------------*
+*       This subroutine needs to be implemented only for direct access
+*       (for better performance) and for the Report/Report Interface
+*       (drill through).
+*       The inverse routine should transform a projection and
+*       a selection for the target to a projection and a selection
+*       for the source, respectively.
+*       If the implementation remains empty all fields are filled and
+*       all values are selected.
+*----------------------------------------------------------------------*
+*       Customer comment:
+*----------------------------------------------------------------------*
+  METHOD inverse_end_routine.
+
+*   IMPORTING
+*     i_r_selset_outbound          TYPE REF TO cl_rsmds_set
+*     i_th_fields_outbound         TYPE HASHED TABLE
+*     i_r_selset_outbound_complete TYPE REF TO cl_rsmds_set
+*     i_r_universe_inbound         TYPE REF TO cl_rsmds_universe
+*   CHANGING
+*     c_r_selset_inbound           TYPE REF TO cl_rsmds_set
+*     c_th_fields_inbound          TYPE HASHED TABLE
+*     c_exact                      TYPE rs_bool
+
+*$*$ begin of inverse routine - insert your code only below this line*-*
+... "insert your code here
+   TYPES ty_rt_fiscper TYPE RANGE OF char30.
+    "Range table type for inbound field FLDATE
+    TYPES ty_rs_fiscper TYPE LINE OF ty_rt_fiscper.
+    "Range structure type for inbound field FLDATE
+    TYPES BEGIN OF ty_s_range.
+    "Range type for inbound field ...
+    TYPES fieldnm      TYPE fieldname.
+    "... extended by field/dimension name in component FIELDNM
+            INCLUDE            TYPE ty_rs_fiscper.
+    TYPES END   OF ty_s_range.
+    TYPES ty_t_ranges  TYPE STANDARD TABLE OF ty_s_range.
+    "Extended range table type
+
+*   Local data declarations:
+    DATA l_t_ranges    TYPE ty_t_ranges.
+    DATA l_s_range     LIKE LINE OF l_t_ranges.
+    FIELD-SYMBOLS: <fs_range> LIKE LINE OF l_t_ranges.
+
+*   First check if all values are requested from outbound (=target)
+*   structure
+    IF i_r_selset_outbound->is_universal( ) EQ rsmds_c_boolean-true.
+
+*     If all values are requested from outbound structure it seems to be
+*     reasonable to request all values from inbound structure too.
+      c_r_selset_inbound = cl_rsmds_set=>get_universal_set( ).
+      "Get 'all values' condition as a multi-dimensional set
+      "object and move it to the inbound selection set
+      c_exact            = rs_c_true.
+      "Mark the result as an exact transformation
+    ELSE.
+
+      TRY.
+*         Convert outbound selection set to range table
+          CALL METHOD i_r_selset_outbound->to_ranges
+            EXPORTING
+              i_fieldname_dimension = 'FIELDNM'
+              "Fill column FIELDNM of passed table L_T_RANGES with
+              "dimension name of outbound selection set
+            CHANGING
+              c_t_ranges            = l_t_ranges.
+          "receive outbound selection set as range table. "
+
+          "Replace outbound
+          LOOP AT l_t_ranges ASSIGNING <fs_range>.
+            IF <fs_range>-fieldnm = 'CALMONTH'.
+              <fs_range>-fieldnm = 'FISCPER'.
+
+              CONCATENATE <fs_range>-low(4) '0' <fs_range>-low+4(2)
+                            INTO <fs_range>-low.
+
+              CONCATENATE <fs_range>-high(4) '0' <fs_range>-high+4(2)
+                             INTO <fs_range>-high.
+
+            ELSEIF <fs_range>-fieldnm = 'CALYEAR'.
+              <fs_range>-fieldnm = 'FISCYEAR'.
+            ELSEIF <fs_range>-fieldnm = 'CALMONTH2'.
+              <fs_range>-fieldnm = 'FISCPER3'.
+
+              <fs_range>-low  = '0' && <fs_range>-low.
+              <fs_range>-high = '0' && <fs_range>-high.
+            ENDIF.
+          ENDLOOP.
+        CATCH cx_rsmds_input_invalid_type.
+      ENDTRY.
+
+      TRY.
+          c_exact  = rs_c_true.
+          c_r_selset_inbound =
+          i_r_universe_inbound->create_set_from_ranges(
+          "Create inbound selection set from
+                                 i_fieldname_dimension = 'FIELDNM'
+                                 "range table and take inbound
+                                 i_t_ranges            = l_t_ranges  ).
+          "dimension name from column FIELDNM
+
+        CATCH cx_rsmds_input_invalid
+              cx_rsmds_input_invalid_type.
+          " data types of outbound and inbound
+          "dimension are incompatible
+*Return all values condition as fallback in a case of any errors
+          c_r_selset_inbound = cl_rsmds_set=>get_universal_set( ).
+          c_exact            = rs_c_false.
+
+      ENDTRY.
+    ENDIF.
+*$*$ end of inverse routine - insert your code only before this line *-*
+
+  ENDMETHOD. 
+================================
+2079372 - SAP HANA - Statement Routing
+SAP Note 1963887 - BusinessObjects Web Intelligence sends unprepared statements by default to HANA which prevents usage of HANA statement routing in HANA scale out landscapes.
+
+ADBC is an object orianted API for the Native SQL interface of the AS ABAP that allows to send database specific SQL commands to a database system and process the result.
+The class CL_SQL_PREPARED_STATEMENT makes it possible to execute prepared SQL statements with different parameters passed to it.
+
+The SQL client libraries will connect to the first available host specified in the connect string, which can contain single hosts or a list of hosts. All hosts that could become active master, because they are one of the configured master candidates, should be listed there to allow initial connect to any of them in case of a host auto-failover. As result the client libraries receive a list of all hosts. During operation the statements may be sent to any of these hosts. The client connection code uses a "round-robin" approach to reconnect and ensures that these clients can reach the SAP HANA database. In the failover case a list of hosts is parsed until the first accessible host is found.
+
+Statement routing helps to optimize performance by reducing the amount of data that must be sent over the internal network zone. In principle, clients can send requests to any index server in a distributed system. This, however, could lead to a performance decrease, if, for example, a query involving data located on server1 is sent to server2. Server2 would have to forward the query execution to server1 and forward the response from server1 to the client. This overhead can be avoided if the client directly sends the query to server1. With the usage of prepared statements this can be achieved.
+=====================
+transformation activate
+Use ABAP Program ABAP Program RSDG_TRFN_ACTIVATE
+====================
+reactivate activate DSO
+rsdg_odso_activate
+======================
+не работает, если в кубе год - годмесяц - дата, и заполнены год и год-месяц, а дата - пустая.
+херня
+1772036 - Inconsistent Time Dimensions
+2237679 - Time Charateristics and Current Member Variables
+CURRENT_MEMBER
+https://wiki.scn.sap.com/wiki/display/BI/How+to+Create+a+Current+Member+Variable
+==========================
+1717880 - Virtual Key Figures & Characteristics
+Note 1488910 introduces the new kernel-based BADI RSROA_OLAP_BADI which reduces the runtime for the BADI considerably. This reduction in runtime is only achieved if you create a new implementation of the BADI RSROA_OLAP_BADI, the classic BADI (and corresponding implementations)remains unchanged. Please see the sample code of the class CL_EXM_RSROA_OLAP_BADI. There you will notice that new methods have been introduced as e.g. COMPUTE_TABLE. This method is called once per PartProvider and DataManager-call (data package -> structure C_T_DATA) and gives you the possibility to process the entire data package. If you don't need this flexibility you can use the method COMPUTE_SINGLE which is called for each data record of C_T_DATA (as for the classic BADI).
+==============================
+Прямая routine:
+из FISCPER делают 0CALMONTH
+а вот и обратная:
+  METHOD inverse_end_routine.
+
+*   IMPORTING
+*     i_r_selset_outbound          TYPE REF TO cl_rsmds_set
+*     i_th_fields_outbound         TYPE HASHED TABLE
+*     i_r_selset_outbound_complete TYPE REF TO cl_rsmds_set
+*     i_r_universe_inbound         TYPE REF TO cl_rsmds_universe
+*   CHANGING
+*     c_r_selset_inbound           TYPE REF TO cl_rsmds_set
+*     c_th_fields_inbound          TYPE HASHED TABLE
+*     c_exact                      TYPE rs_bool
+
+*$*$ begin of inverse routine - insert your code only below this line*-*
+    ... "insert your code here
+
+
+    TYPES ty_rt_fiscper TYPE RANGE OF char30.
+    "Range table type for inbound field FLDATE
+    TYPES ty_rs_fiscper TYPE LINE OF ty_rt_fiscper.
+    "Range structure type for inbound field FLDATE
+    TYPES BEGIN OF ty_s_range.
+    "Range type for inbound field ...
+    TYPES fieldnm      TYPE fieldname.
+    "... extended by field/dimension name in component FIELDNM
+            INCLUDE            TYPE ty_rs_fiscper.
+    TYPES END   OF ty_s_range.
+    TYPES ty_t_ranges  TYPE STANDARD TABLE OF ty_s_range.
+    "Extended range table type
+
+*   Local data declarations:
+    DATA l_t_ranges    TYPE ty_t_ranges.
+    DATA l_s_range     LIKE LINE OF l_t_ranges.
+    FIELD-SYMBOLS: <fs_range> LIKE LINE OF l_t_ranges.
+
+*   First check if all values are requested from outbound (=target)
+*   structure
+    IF i_r_selset_outbound->is_universal( ) EQ rsmds_c_boolean-true.
+
+*     If all values are requested from outbound structure it seems to be
+*     reasonable to request all values from inbound structure too.
+      c_r_selset_inbound = cl_rsmds_set=>get_universal_set( ).
+      "Get 'all values' condition as a multi-dimensional set
+      "object and move it to the inbound selection set
+      c_exact            = rs_c_true.
+      "Mark the result as an exact transformation
+    ELSE.
+
+      TRY.
+*         Convert outbound selection set to range table
+          CALL METHOD i_r_selset_outbound->to_ranges
+            EXPORTING
+              i_fieldname_dimension = 'FIELDNM'
+              "Fill column FIELDNM of passed table L_T_RANGES with
+              "dimension name of outbound selection set
+            CHANGING
+              c_t_ranges            = l_t_ranges.
+          "receive outbound selection set as range table. "
+
+          "Replace outbound
+
+          LOOP AT l_t_ranges ASSIGNING <fs_range>.
+
+            IF <fs_range>-fieldnm = 'CALMONTH'.
+              <fs_range>-fieldnm = 'FISCPER'.
+              "CONCATENATE <fs_range>-low+1(4) '0' <fs_range>-low+5(2)
+              "              INTO <fs_range>-low.
+              CONCATENATE <fs_range>-low(4) '0' <fs_range>-low+4(2)
+                            INTO <fs_range>-low.
+
+              CONCATENATE <fs_range>-high(4) '0' <fs_range>-high+4(2)
+                             INTO <fs_range>-high.
+
+            ELSEIF <fs_range>-fieldnm = 'CALYEAR'.
+              <fs_range>-fieldnm = 'FISCYEAR'.
+
+
+            ENDIF.
+
+          ENDLOOP.
+
+
+        CATCH cx_rsmds_input_invalid_type.
+      ENDTRY.
+
+      TRY.
+          c_r_selset_inbound =
+          i_r_universe_inbound->create_set_from_ranges(
+          "Create inbound selection set from
+                                 i_fieldname_dimension = 'FIELDNM'
+                                 "range table and take inbound
+                                 i_t_ranges            = l_t_ranges  ).
+          "dimension name from column FIELDNM
+
+        CATCH cx_rsmds_input_invalid
+              cx_rsmds_input_invalid_type.
+          " data types of outbound and inbound
+          "dimension are incompatible
+*Return all values condition as fallback in a case of any errors
+          c_r_selset_inbound = cl_rsmds_set=>get_universal_set( ).
+          c_exact            = rs_c_false.
+
+      ENDTRY.
+
+    ENDIF.
+
+
+
+*$*$ end of inverse routine - insert your code only before this line *-*
+
+  ENDMETHOD.                    "inverse_end_routine
+================
+BW transformation monitor ABAP
+
+        APPEND VALUE #(
+          msgty = 'E'
+          msgid = '0000'
+          msgno = '001'
+          msgv1 = 'Исходные фактуры не найдены'
+        ) TO MONITOR.
+        RAISE EXCEPTION TYPE CX_RSROUT_ABORT.
+=======================
+http://help-legacy.sap.com/saphelp_hanaplatform/helpdata/en/4b/a9edce1f2347a0b9fcda99879c17a1/content.htm
+SAP HANA DB hints
+=======================
+TCode STC01: SAP_BW_SETUP_INITIAL_S4HANA
+2303900
+2356498 - BW task list does not start job BI_WRITE_PROT_TO_APPLLOG
+2303900 - Latest Information about BW Setup in S/4HANA Systems
+2362807 - SAP HANA authorizations for BW metadata search/no results in search/input help for BW modeling tools
+2289865 - Configuration steps for S/4 HANA Analytics (выполнить последовательность шагов)
+2289865 - Configuration steps for S/4 HANA Analytics
+
+========================
+https://blogs.sap.com/2017/03/23/abap-cds-consumption-view-features-ultimate-test/
+Annotation list and HELP
+https://help.sap.com/http.svc/rc/abapdocu_750_index_htm/7.50/en-US/abencds_annotations_sap.htm#@@ITOC@@ABENCDS_ANNOTATIONS_SAP_14
+======================
+1976487 - Information about adjusting customer-specific programs to the simplified data model in SAP Simple Finance
+2185026 - Compatibility views COSP, COSS, COEP, COVP: How do you optimize their use?
+======================
+Хинты перечислять через запятую!!
+
+ SELECT t1.ref_doc_no, "/BIC/CARD12" AS card12                ,"/BIC/CARDKIND" AS cardkind                ,"/BIC/CRECNUM" AS crecnum                
+  ,time                ,material                ,debitor                ,calday                ,"/BIC/ZRT_PREDR" AS zrt_predr  
+  FROM "POSDWH"."RO_V_POS_REC_ITM" t1, zposwhutil_pk01 t2
+ WHERE t1.ref_doc_no = t2.ref_doc_no 
+   AND t2.KGUID = 'B603A5E4FF031ED793E86E0BC2D0CA14'
+   AND t1.rt_paydir = '1'           
+ WITH HINT( REMOTE_JOIN_RELOCATION,  CS_JOIN_MATERIALIZATION_SMALLEST_TABLE_FIRST )
+========================
+SAP HANA stored proc with inline declaration
+
+PROCEDURE "SHABLYKIN"."Lenta_dev::sda_in_call" (
+     IN i_kguid NVARCHAR(16), 
+     OUT o_rec_itm  table ( 
+                    "REF_DOC_NO" nvarchar(16), 
+                    "CARD12"     nvarchar(12), 
+                    "ZRT_PREDR"  decimal(17,2) )
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA "SHABLYKIN"
+	READS SQL DATA AS
+BEGIN
+ lt_ref_doc_no = SELECT ref_doc_no FROM zposwhutil_pk01 WHERE KGUID = i_kguid;
+ o_rec_itm = SELECT t1.ref_doc_no, "/BIC/CARD12" AS card12  ,"/BIC/ZRT_PREDR" AS zrt_predr 
+                FROM "POSDWH"."POS_REC_ITM_RELOAD" t1
+               WHERE t1.ref_doc_no IN (SELECT ref_doc_no FROM :lt_ref_doc_no )
+                 AND t1.rt_paydir = '1';
+END;
+
+grant execute on "SHABLYKIN"."Lenta_dev::sda_in_call" to ZHAKAEV;
+
+call "SHABLYKIN"."Lenta_dev::sda_in_call" (i_kguid => 'B603A5E4FF031ED793E86E0BC2D0CA14', o_rec_itm => ? );
+
+call "_SYS_REPO"."GRANT_ACTIVATED_ROLE"('Lenta_dev::sda_exec','ZHAKAEV');
+
+=====================
+2126689 - insufficient privilege. Not authorized [VIDEO]
+HANA trace level info for authorisation
+
+custom role for developers
+https://help.sap.com/viewer/b3d0daf2a98e49ada00bf31b7ca7a42e/2.0.00/en-US/72cd2169c27d4760a5f66820cc4bae2b.html
+role <package_name>::DEVELOPMENT
+// extends role com.acme::role1
+// extends catalog role "CATROLE1", "CATROLE2"
+{
+// system privileges
+// system privilege: BACKUP ADMIN, USER ADMIN;
+
+// schema privileges
+catalog schema "_SYS_BIC": SELECT, EXECUTE;
+
+// sql object privileges
+// privileges on the same object may be split up in several lines
+catalog sql object "SYS"."REPOSITORY_REST": EXECUTE;
+catalog sql object "_SYS_BI"."BIMC_ALL_CUBES": SELECT; 
+catalog sql object "_SYS_BI"."BIMC_CONFIGURATION": SELECT; 
+catalog sql object "_SYS_BI"."BIMC_DIMENSIONS": SELECT; 
+catalog sql object "_SYS_BI"."BIMC_PROPERTIES": SELECT; 
+catalog sql object "_SYS_BI"."BIMC_VARIABLE": SELECT; 
+catalog sql object "_SYS_BI"."BIMC_VARIABLE_ASSIGNMENT": SELECT; 
+catalog sql object "_SYS_BI"."BIMC_VARIABLE_VALUE": SELECT;
+catalog sql object "_SYS_BI"."M_CONTENT_MAPPING": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_FISCAL_CALENDAR": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_IMPORT_SERVER_CONFIG": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_REPLICATION_EXCEPTIONS": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_SCHEMA_MAPPING": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_TIME_DIMENSION": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_TIME_DIMENSION _MONTH": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_TIME_DIMENSION _WEEK": UPDATE, INSERT, DELETE; 
+catalog sql object "_SYS_BI"."M_TIME_DIMENSION _YEAR": UPDATE, INSERT, DELETE;
+catalog sql object "_SYS_BI"."M_USER_PERSONALIZATION": UPDATE, INSERT, DELETE;
+
+// analytic privileges
+catalog analytic privilege: "_SYS_BI_CP_ALL";
+
+// design time privileges
+package com.acme: REPO.MAINTAIN_NATIVE_PACKAGES;
+package com.acme.myapps: REPO.EDIT_NATIVE_OBJECTS;
+package com.acme.myapps: REPO.ACTIVATE_NATIVE_OBJECTS; 
+application privilege: com.acme.myapps.app1::Execute, com.acme.xs.app1::Save;
+application privilege: com.acme.myapps.debugger::Execute;
+
+}
+=====================
+Unnamed SQL Script block
+http://help-legacy.sap.com/saphelp_hanaplatform/helpdata/en/52/103853351841f6a1e87f40b2686da9/content.htm
+Можно без создания процедуры, но некоторые hints Не работают внутри процедуры
+do begin
+       tab_1 =
+             SELECT t2.ref_doc_no
+             FROM sapbwd.zposwhutil_pk01 t2
+             WHERE t2.KGUID = 'B603A5E4FF031ED793E86E0BC2D0CA14';
+       tab_2 =
+        SELECT
+              t1.ref_doc_no,
+              "/BIC/CARD12" AS card12,
+             "/BIC/CARDKIND" AS cardkind,
+             "/BIC/CRECNUM" AS crecnum,
+             time,
+             material,
+             debitor,
+             calday,
+             "/BIC/ZRT_PREDR" AS zrt_predr 
+       FROM  "POSDWH"."RO_V_POS_REC_ITM"  t1
+       WHERE t1.ref_doc_no IN (  
+             SELECT ref_doc_no FROM :tab_1
+       )
+       AND t1.rt_paydir = '1' 
+       WITH HINT( CS_ITAB_IN_SUBQUERY  );
+     SELECT * FROM :tab_2; // вывод на экран
+end;       
+==================
+CDS assisiations goto restrictions
+https://help.sap.com/http.svc/rc/abapdocu_751_index_htm/7.51/en-US/abenopen_sql_path_restrictions.htm
+===================
+ABAP RSARCH_DATE_CONVERT
+FM transforms date to cal* (calquater,...)
+===================
+В метод "заходит" только если переменная типа user-exit!!!
+SE19 -> RSROA_VARIABLES_EXIT (enhancement spot)
+Since I_STEP = 3 is not called by info object, an implementation for all I_STEP 3 validations can be created with filter value OBJNM = ‘’
+
+https://blogs.sap.com/2014/01/20/how-to-create-variable-exits-through-standard-enhancement-spot-rsroavariablesexit/
+
+Table RSZGLOBV - переменные
+==============================
+TRY.
+ ls_output-use_live_y =  12 * lt_asset_afab[ comp_code = <fs_empos>-comp_code asset_main = <fs_empos>-asset_main asset = <fs_empos>-asset ]-use_live_y.
+   CATCH cx_sy_itab_line_not_found.
+ENDTRY.
+
+TYPES:
+  BEGIN OF ty_data,
+    kunnr TYPE kunnr,
+    name1 TYPE name1,
+    ort01 TYPE ort01,
+    land1 TYPE land1,
+  END   OF ty_data.
+TYPES: tt_data TYPE STANDARD TABLE OF ty_data
+                                        WITH DEFAULT KEY.
+
+DATA(itab_multi_comp) =
+  VALUE tt_data( ( kunnr = '123' name1 = 'ABCD' ort01 = 'LV' land1 = 'NV' )
+                 ( kunnr = '456' name1 = 'XYZ'  ort01 = 'LA' land1 = 'CA' )
+              ).
+=====================
+1942767 - transport not successfully: Error when activating element
+Когда непонятно, что надо переактивировать в Bex
+========================
+Generate huge dataset: put data in SALESx and execute the query:
+insert into SALES
+select 
+  SALES1.MONTH,
+  SALES2.SALESREP,
+  SALES3.CUSTOMER,
+  SALES3.SALES,
+  SALES3.TARGET,
+  from SALES1, SALES2, SALES3
+==========================
+более компактная форма представления аннотаций CDS
+@Analytics:{dataCategory: #CUBE, dataExtraction.enabled: true }
+=========================
+
+  PlannedHours,
+  ActualHours,
+  @AnalyticsDetails.query.formula: 'ActualHours / PlannedHours * 100'
+  @EndUserText.label: 'Utilization Rate'
+  0 as UtilizationRat
+
+определение формулы в CDS через аннотацию!!!
+=================
+  with 
+  fact_tab  as (select * from EDW.DAILY_STORE_ITEM),
+  store_tab as (select * from EDW.STORE)
+  select s.city_nm, count(*) 
+    from fact_tab f inner join store_tab s on (f.store_key=s.store_key) group by s.city_nm;
+
+So my recommendation is to try using subselects or WITH instead of using table variables.  And as usual you need to run some benchmarks with your own data and own needs, try explain plan etc.
+
+=================
+
+Yes you can, but to do so you must inherit cl_gui_alv_grid class and add new method which will call protected method set_view_excel. You have example in include GRID_PLAN_CLASS:
+
+method set_view_excel_sp.
+
+     call method me->update_frontend.
+
+     call method me->set_view_excel
+
+       exporting
+
+         i_doc_url = 'file://C:/Med/test.xls'.
+
+     call method cl_gui_cfw=>flush.
+
+   endmethod.                    "set_view_excel_sp
+
+========
+Or even easier, put this after set_table_for_first_display 
+
+      data ucomm type sy-ucomm value '&VEXCEL'.
+
+      grid->set_function_code( changing c_ucomm = ucomm ).
+============
+There is an option Microsoft Excel in ALV menu, after display in excel , you should save as default layout.
+
+Then every time run the report , it is displayed in Excel only and also there is option to SAVE AS file.
+==============
+The functionality covered by transaction STVARV and table TVARVC allows you to create single customizable parameters or select-option. So instead of creating a new ztable just to store one value you can create a parameter within here which gets stored in SAP table TVARVC and is and maintained via transaction STVARV. 
+
+select single *
+  into wa_tvarvc
+  from tvarvc
+ where NAME eq 'ZBUFFER'.
+==================
+
+===================
+Using FM in DTP selection routine
+
+  DATA: l_idx      LIKE sy-tabix,
+        lv_s_range TYPE rssdlrange.
+  READ TABLE l_t_range WITH KEY
+       fieldname = 'PSTNG_DATE'.
+  l_idx = sy-tabix.
+  lv_s_range = zcl_bwsvo_utils=>get_pstngdate_lyear( i_rsfieldnm = 'PSTNG_DATE' ).
+  l_t_range = lv_s_range.
+  IF l_idx <> 0.
+    MODIFY l_t_range INDEX l_idx.
+  ELSE.
+    APPEND l_t_range.
+  ENDIF.
+  p_subrc = 0.
+
+and routine...
+
+  class-methods GET_PSTNGDATE_LYEAR
+    importing
+      !I_RSFIELDNM type RSFIELDNM
+    returning
+      value(R_S_RANGE) type RSSDLRANGE .
+
+  METHOD GET_PSTNGDATE_LYEAR. 
+  DATA: lv_calday TYPE d,
+        lv_d      TYPE d,
+        lv_ld     TYPE d,
+        lv_hd     TYPE d,
+        lv_c8(8)  TYPE c.
+
+  SELECT SINGLE low INTO lv_c8
+    FROM tvarvc
+   WHERE name = 'ZDBREPDATE'.
+  IF sy-subrc NE 0.
+    lv_d = lv_c8.
+    CONCATENATE lv_d+0(6) '01' INTO lv_d.
+    lv_d = lv_d - 1.
+    lv_hd = lv_d. " последнее число предыдущего месяца
+    lv_ld = lv_hd - 360. " минус 12 мес.
+    CONCATENATE lv_ld+0(6) '01' INTO lv_ld.
+    r_s_range-fieldname = 'PSTNG_DATE'.
+    r_s_range-iobjnm = 'PSTNG_DATE'.
+    lv_c8 = lv_ld. r_s_range-low =  lv_c8.
+    lv_c8 = lv_hd. r_s_range-high = lv_c8.
+    r_s_range-option = 'BT'.
+    r_s_range-sign = 'I'.
+  ENDIF.
+  ENDMETHOD.
+==============================
+Если не видно списка соединений в Analysis, необходимо через контекстное меню нажать пункт refresh. На кнопке refresh нет!!!
+2518955 - Analysis for Office is not showing the BW systems from SAPUILandscape.xml file
+В analysis 2.5 настойки файлов конфигурации вынесены в интерфейс!!!!
+=========================
+M_SESSION_CONTEXT System View
+Specifies the session variables for each connection.
+e.g. CLIENT и т.д.
+===================
+RSU5_SAPI_BADI
+BADI extractor extension
+
+  method if_ex_rsu5_sapi_badi~data_transform.
+    types:
+     tt_bwe_equi type table of bwe_equi. " структура экстракции
+
+    field-symbols: <lt_data> type tt_bwe_equi,
+                   <ls_data> type bwe_equi.
+    check i_datasource = '0EQUIPMENT_ATTR'.
+
+    assign c_t_data[] to <lt_data>.
+
+    loop at <lt_data> assigning <ls_data>.
+
+    endloop.
+  endmethod.
+
+===================
+2388483 - How-To: Data Management for Technical Tables
+clean housekeeping
+----------------
+FI_AA_12
+FM to set up concrete Assets for extraction
+
+https://wiki.scn.sap.com/wiki/display/ERPFI/Overview+BW+Delta+Extraction
+=====================
+@3U@ в имени роди показывает знак STOP!!
+=================
+RSDIOBJT - таблица текстов инфообъектов
+=================
+@ClientHandling.algorithm: #SESSION_VARIABLE
+https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abencds_client_handling.htm
+====================
+RSRTS_ODP_DIS - просмотр CDS (консистентность)
+
+Useful blog about CDS
+
+https://blogs.sap.com/2016/03/25/my-cds-view-self-study-tutorial-part-6-consume-table-function-in-cds-view/#
+=====================
+16 - maximum length of CDS sqlview name
+====================
+подход, когда вместо несольких имплементаций одной BADI создается одна имплементация - класс, а в нем динамически определяется имя вызываемого класса-метода и вызывается,
+называется Class Factory
+====================
+@Endusertext.label для параметров CDS работает только на CDS-QUERY
+В качестве типов параметров можно определять любые типы, определенные в словаре ABAP. Встроенные в ABAP Типы определяются как abap.<имя типа>
+====================
+ABAPCDS
+контекстное меню на SQLView в редакторе - и можно выбрать переход к SQL-выражению CREATE VIEW..
+======================
+You can use both solutions, but I still don't see the specific uses case for ACDOCP other than possibly Consolidations.  For a planning scenario with any significant complexity you would want to breakout the R01 approach to potentially multiple data models for design optimization purposes (i.e.: and R01a approach for Revenue Planning and a R01b for CAPEX solution). 
+==================
+2519240 new fiedls in ACDOCP for planning
+@sheldon- I thought there was some limitation on reference characteristics to /ERP delivered objects per note 2377290
+
+@ Jay :) - this is a big issue for customers and we have no answer for them. The question generally is - why does the latest release 1709, come delivered with old tech (multiproviders). there is a conversion tool provided by SAP which has some issues... ( I have not used it though).
+===================
+SAPBC_DATA_GENERATOR - создание новых данных в SFLIGHT, SBOOK
+====================
+data(lv_run_mode) = cond string( when mv_test = abap_true then 'тестовый' else 'продуктивный' ).
+write: / |Режим запуска : { lv_run_mode }|.
+==================
+For SAT
+REPORT zrundtp.
+
+"
+PARAMETER: p_dtp TYPE rsbkdtpnm OBLIGATORY DEFAULT 'DTP_00O2TPC0G0T5KUE5DC3C0F1KC'.
+
+DATA: r_dtp TYPE REF TO cl_rsbk_dtp.
+
+CALL METHOD cl_rsbk_dtp=>factory
+  EXPORTING
+    i_dtp   = p_dtp
+  RECEIVING
+    r_r_dtp = r_dtp.
+
+DATA l_r_request TYPE REF TO cl_rsbk_request.
+l_r_request = r_dtp->create_request( ).
+l_r_request->set_ctype( rsbc_c_ctype-sync ).
+l_r_request->doit( ).
+========================
+
+In order to use the DTP error handler process, adjust the code in the End or Expert Routine in the corresponding data flow according to the following SAP consulting notes:
+
+1227667 'Guidelines for expert routine: Design rules'
+1223532 'Design rules: Adding records to end routine'
+=======================
+ table RSTRAN.
+
+check fields TRANID - transformations ID
+
+TRANPRG - this will contain generated program name without GP.
+
+open your transformations, Extras--> Display generated prorgam--> GP<TRANPRG>.
+===============
+HANA SCript view. Create steps
+1) CREATE TABLE with required column set
+2) CREATE SCRIPT CV
+3) choose add column from ... TRY different names to get table from step 1 in list of available columns. Exact table name MAY NOT match!!!
+4) continue as usual.
+
+ (SELECT '"' || column_name || '" ' || map(data_type_name,'VARCHAR','NVARCHAR',data_type_name) || '(' || "LENGTH" || '),' as str01 FROM TABLE_COLUMNS
+   WHERE table_name = 'T_PZ_STOCK' ORDER BY position)
+===
+The reason for this kind of endless loop is that we waiting for a status message from the scheduled task that is not coming. One reason could be that the task is never exected by the QDQ Monditor since the ODP Queue is supended (resume via program ODQ_TQ_RESUME_TASK_QUEUE). To check this you can use the transaction ODQ_TQ_MONITOR. With this correction we will wait maxium 100 seconds for a status message and then we come back with the External Task ID with that it is possible to check the task status in ODQ_TQ_MONITOR.
+==============
+Это выражение в фильтре на узле типа "проекция" в CV !!!
+if("CC_IP_STORNO" ='X',  "CC_STORNO"='', 1=1 )
+Там могут быть не только поле_оператор_константа, но и такое!!!
+============= 
+RSMNG BW/4 old administrator GUI
+=============
+RSDG_TRFN_ACTIVATE
+activate transformation
+====================
+Придумал такой способ передачи информации между выбранной переменной и методом compute_table в BAdI, в котором можно менять состав строк отчетов
+В методе для переменных на шаге 3 пишешь что-то вроде этого
+
+  METHOD if_rsroa_variables_exit_badi~process.
+
+    IF i_step = 3. "проверка введенных  значений
+      DATA:
+         ls_zbw_cumlabel TYPE zbw_cumlabel.
+      TRY.
+          DATA(ls_var_range) = i_t_var_range[ vnam = 'Z0FM_AREA_001' ].
+          ls_zbw_cumlabel-compuid = i_s_rkb1d-compuid.
+          ls_zbw_cumlabel-genuniid = i_s_rkb1d-genuniid.
+          ls_zbw_cumlabel-tmstmp_start = i_s_rkb1d-tmstmp_start.
+          ls_zbw_cumlabel-repdate = sy-datum.
+          INSERT INTO zbw_cumlabel VALUES ls_zbw_cumlabel.
+        CATCH cx_sy_itab_line_not_found.
+      ENDTRY.
+    ENDIF.
+  ENDMETHOD.
+
+Передача через сохранение в таблице zbw_cumlabel пары GUID и метки времени из структуры i_s_rkb1d. Можно гарантировать, что эта комбинация уникальна.
+
+А в методе BAdI – считываем ту же структуру i_s_rkb1d и ищем для данных из нее запись в таблице. Нашли – ОК, передача параметров состоялась… Не нашли – нет.
+i_s_rkb1d есть как параметр в обоих методах обоих классов для BAdI.
+
+…
+        SELECT SINGLE compuid FROM zbw_cumlabel
+          INTO @DATA(lv_zbw_cumlabel)
+          WHERE compuid = @i_s_rkb1d-compuid
+            AND genuniid = @i_s_rkb1d-genuniid
+            AND tmstmp_start = @i_s_rkb1d-tmstmp_start.
+        IF sy-subrc = 0.
+          « параметр передан! 
+        ENDIF.
+…
+
+Для передачи используется физическая таблица zbw_cumlabel, которую надо периодически вычищать по полю repdate.
+
+====================
+2619180 - Restricting 0INFOPROV InfoObject you see only technical names
+===
+Selective deletion. Works for ADSO a swell. Delete only activated data. 
+Do not executes withou any filter criteria
+DELETE_FACTS Transaction code
+https://blogs.sap.com/2013/08/06/selective-deletion-in-process-chain/
+===
+RSDATA - transfer BW data via XML files
+====
+RSBKDTPREPAIR - for mass activation of DTPs
+===
+/SDF/SMON
+https://launchpad.support.sap.com/#/notes/2651881
+https://launchpad.support.sap.com/#/notes/3033103
+https://wiki.scn.sap.com/wiki/display/CPP/All+about+SMON
+===
+HANA Studio / Eclipse Error: The file systemis read only
+I solved by a deletion of Database & Cache from preferences.
+go to Window-->Preferences, searc for Semantic File System & press "Delete Database & Cache".
+===================
+t-code RSMNG - BW/4 GUI administering data targets
+t-code BW4WEB (also known as “BW Fiori Launchpad”).
+t-code RSTRANGUI - show transformation
+t-code RSDTP - show DTP
+https://launchpad.support.sap.com/#/notes/2859559
+==============
+SVERS CVERS - component versions
+===============
+Regexp
+--
+      SELECT rpa_wgh3
+        FROM /bi0/prpa_wgh3
+      WHERE objvers = 'A'
+        AND rpa_wgh3 IN @p_wgh3
+        AND like_regexpr( pcre = '[0-9][0-9][0-9][0-9]', value = rpa_wgh3  ) = '1'
+      INTO TABLE @lt_wgh3.
+==================
