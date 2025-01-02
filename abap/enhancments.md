@@ -45,7 +45,7 @@ old version is RSR_OLAP_BADI
 (https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361383939.html)
 
 # SAP BAdI for virtual analysis authorization RSEC_VIRTUAL_AUTH_BADI
-(Tcode SE19) New BAdi from enh.spot RSEC_VIRTUAL_AUTH
+(Tcode SE19) New BAdi from enh.spot RSEC_VIRTUAL_AUTH<br>
 (https://community.sap.com/t5/technology-blogs-by-members/implementing-virtual-analysis-authorizations/ba-p/13275567)
 
 # SAP BAdI for RRI-jump with changing parameteres RS_BBS_BADI
