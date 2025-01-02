@@ -4,6 +4,7 @@
 + EXIT_SAPLRSAP_002   Attributes, texts
 + EXIT_SAPLRSAP_003   Texts
 + EXIT_SAPLRSAP_004   Hierarchies<br>
+
 (https://community.sap.com/t5/technology-blogs-by-members/enhancement-of-bw-datasources-using-badi/ba-p/13085219)
 
 # SAP BAdI for extractor extension RSU5_SAPI_BADI
