@@ -3,7 +3,7 @@
 + EXIT_SAPLRSAP_001   Transaction data
 + EXIT_SAPLRSAP_002   Attributes, texts
 + EXIT_SAPLRSAP_003   Texts
-+ EXIT_SAPLRSAP_004   Hierarchies
++ EXIT_SAPLRSAP_004   Hierarchies\
 (https://community.sap.com/t5/technology-blogs-by-members/enhancement-of-bw-datasources-using-badi/ba-p/13085219)
 
 # SAP BAdI for extractor extension RSU5_SAPI_BADI
@@ -29,7 +29,7 @@ ODP-extractors support both BADIs. But if both olad and new are implemented, the
 (Tcode SE19) New BAdI from enh spot RSR_VARIABLE_F4_RESTRICT\
 + IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_FLAT  -  to restrict F4 help for value variables
 + IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_NODE  -  to restrict F4 help for ´hierarchy node variables
-+ IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_HIER  -  to restrict F4 help for hierarchy variables
++ IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_HIER  -  to restrict F4 help for hierarchy variables\
 (https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361386039.html)
 
 # SAP BAdI for decision in process chain RSAR_CONNECTOR
