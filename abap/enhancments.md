@@ -25,6 +25,8 @@ ODP-extractors support both BADIs<br>
 # SAP BAdI for user-exit variables RSROA_VARIABLES_EXIT_BADI
 (Tcode SE19) New BAdi from enh.spot RSROA_VARIABLES_EXIT
 + PROCESS<br>
+Since I_STEP = 3 is not called by info object, an implementation for all I_STEP 3 validations can be created with filter value OBJNM = ‘’  
+
 
 (https://community.sap.com/t5/technology-blogs-by-members/customer-exit-variable-implementation-using-badi/ba-p/13535137)
 

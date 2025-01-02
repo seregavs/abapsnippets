@@ -262,7 +262,7 @@ http://help.sap.com/saphelp_nw75/helpdata/en/c2/dd92fb83784c4a87e16e66abeeacbd/c
 // use Annotation BW750 or above
 Analytics.query:true
 
-RSRTS_CDS_QUERY_CHECK
+
 
 Please check the generated BW InfoProvider (use transaction RSRTS_ODP_DIS with ODP Context “ABAP Core Data Service” and ODP Name ZAVDATA2_01 ). In particular, use the 'Check Metadata' function and inspect any potentially ignored associations.
 
@@ -451,8 +451,7 @@ If data with low or medium relevance that has not yet been declared retrieved or
 
 ==============
 
-Tables RODP* for ODP
-Table ROOSATTR - EXPOSE_EXTERNAL = X – ðàçðåøåí äëÿ ODP
+
 Ïî óìîë÷àíèþ – ýêñòðàêòîðû àêòèâíû è â ERP òàáëèöà ROOSATTR çàïîëíåíà…
 Çàäàíèå çàïóñêàåòñÿ âèäèìî ïîñëå ÷òåíèÿ èç ïåðâîãî èñòî÷íèêà (íî ÷åðåç ODP- èñõîäíóþ ñèñòåìó â BW)
 
@@ -552,13 +551,6 @@ METHOD IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_NODE.
 ENDMETHOD.
 ENDCLASS.
 ========================
-Search in BW
-TCode RSOSM
-Note 2152359 - BW search/input help for InfoObjects returns no results
-
-äîëæåí áûòü çàïîëíåí ïàêåò SAP HANA â RSOSM
-system-local.bw.bwsearch.SAP<SID>
-è òîãäà âñå ïåðåãåíåðèðóñåòñÿ è áóäåò ÎÊ
 
 documentation
 
@@ -1051,11 +1043,11 @@ Checking the analytic privilege in more detail we can see that the privilege is 
 äåàêòèâèðîâàòü îáúåêò ïîëíîìî÷èé àíàëèçà
 óäàëèòü ñâîéñòâî ðåëåâàíòåí äëÿ àâòîðèçàöèè
 ïåðåàêòèâèðîâàòü ïðèçíàê è èíôîïðîâàéäåðû ñ íèì (ìîäåëè â HANA)
-RS2HANA_GEN
+
 =================
 2103008 - HANA System cannot be attached to BW Modeling Tools due to network configuration
 =================
-SCTS_HTA - SAP HANA Transport for ABAP.
+
 Âêëþ÷åíèå îáúåêòîâ êîíòåíòà â òðàíñïîðòíûé çàïðîñ
 =================
 SADL (Service Adaptation Description Language) is an ABAP technology that enables the consumption of entity relationship-like ABAP data models in various scenarios with a common development experience based on a model-driven approach.
@@ -1072,8 +1064,8 @@ SADL: Derives a default value help support from the foreign key relationship.
 
 Òî åñòü äëÿ äîñòóïà ÷åðåç SADL ýòî àííîòàöèÿ âêëþ÷àåò F4-support. Äëÿ Analysis - îáîçíà÷åíèå èçìåíåíèÿ
 ===========================
-RUTDDLSSHOW2
-check CDS report in SAP GUI
+
+
 ==============
 @Analytics.query: true - ãåíåðèðóåò òðàíçèåíòíûé ïðîâàéäåð => ìîæíî óâèäåòü â Analysis. + Ãåíåðèðóåò OData ñåðâèñ. Â HANA Studio ïîÿâëÿåòñÿ êíîïî÷êà íàïðîòèâ àííîòàöèè. Ïî íåé ìîæíî ïåðåéòè â ñåðâñè.
 
@@ -1091,10 +1083,6 @@ select service and add then. You will be prompted to add package to the service 
 CDS
    cast( 0 as abap.dec(13,2)) as nafab, 
 ==============
-Tcodes: CG3Y and CG3Z
-download and upload file to|from appserver ABAP
-===============
-
 View browser - ìîæíî âûãðóçèòü CDS-views â Excel âìåñòå ñ êîìïîíåíòàìè
 ===============
 Fiori
@@ -1298,12 +1286,7 @@ The class CL_SQL_PREPARED_STATEMENT makes it possible to execute prepared SQL st
 The SQL client libraries will connect to the first available host specified in the connect string, which can contain single hosts or a list of hosts. All hosts that could become active master, because they are one of the configured master candidates, should be listed there to allow initial connect to any of them in case of a host auto-failover. As result the client libraries receive a list of all hosts. During operation the statements may be sent to any of these hosts. The client connection code uses a "round-robin" approach to reconnect and ensures that these clients can reach the SAP HANA database. In the failover case a list of hosts is parsed until the first accessible host is found.
 
 Statement routing helps to optimize performance by reducing the amount of data that must be sent over the internal network zone. In principle, clients can send requests to any index server in a distributed system. This, however, could lead to a performance decrease, if, for example, a query involving data located on server1 is sent to server2. Server2 would have to forward the query execution to server1 and forward the response from server1 to the client. This overhead can be avoided if the client directly sends the query to server1. With the usage of prepared statements this can be achieved.
-=====================
-transformation activate
-Use ABAP Program ABAP Program RSDG_TRFN_ACTIVATE
-====================
-reactivate activate DSO
-rsdg_odso_activate
+
 ======================
 íå ðàáîòàåò, åñëè â êóáå ãîä - ãîäìåñÿö - äàòà, è çàïîëíåíû ãîä è ãîä-ìåñÿö, à äàòà - ïóñòàÿ.
 õåðíÿ
@@ -1575,12 +1558,9 @@ end;
 CDS assisiations goto restrictions
 https://help.sap.com/http.svc/rc/abapdocu_751_index_htm/7.51/en-US/abenopen_sql_path_restrictions.htm
 ===================
-ABAP RSARCH_DATE_CONVERT
-FM transforms date to cal* (calquater,...)
-===================
-Â ìåòîä "çàõîäèò" òîëüêî åñëè ïåðåìåííàÿ òèïà user-exit!!!
-SE19 -> RSROA_VARIABLES_EXIT (enhancement spot)
-Since I_STEP = 3 is not called by info object, an implementation for all I_STEP 3 validations can be created with filter value OBJNM = ‘’
+
+
+
 
 https://blogs.sap.com/2014/01/20/how-to-create-variable-exits-through-standard-enhancement-spot-rsroavariablesexit/
 
@@ -1735,23 +1715,7 @@ M_SESSION_CONTEXT System View
 Specifies the session variables for each connection.
 e.g. CLIENT è ò.ä.
 ===================
-RSU5_SAPI_BADI
-BADI extractor extension
 
-  method if_ex_rsu5_sapi_badi~data_transform.
-    types:
-     tt_bwe_equi type table of bwe_equi. " ñòðóêòóðà ýêñòðàêöèè
-
-    field-symbols: <lt_data> type tt_bwe_equi,
-                   <ls_data> type bwe_equi.
-    check i_datasource = '0EQUIPMENT_ATTR'.
-
-    assign c_t_data[] to <lt_data>.
-
-    loop at <lt_data> assigning <ls_data>.
-
-    endloop.
-  endmethod.
 
 ===================
 2388483 - How-To: Data Management for Technical Tables
@@ -1769,7 +1733,7 @@ RSDIOBJT - òàáëèöà òåêñòîâ èíôîîáúåêòîâ
 @ClientHandling.algorithm: #SESSION_VARIABLE
 https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abencds_client_handling.htm
 ====================
-RSRTS_ODP_DIS - ïðîñìîòð CDS (êîíñèñòåíòíîñòü)
+
 
 Useful blog about CDS
 
@@ -1793,29 +1757,11 @@ You can use both solutions, but I still don't see the specific uses case for ACD
 
 @ Jay :) - this is a big issue for customers and we have no answer for them. The question generally is - why does the latest release 1709, come delivered with old tech (multiproviders). there is a conversion tool provided by SAP which has some issues... ( I have not used it though).
 ===================
-SAPBC_DATA_GENERATOR - ñîçäàíèå íîâûõ äàííûõ â SFLIGHT, SBOOK
 ====================
 data(lv_run_mode) = cond string( when mv_test = abap_true then 'òåñòîâûé' else 'ïðîäóêòèâíûé' ).
 write: / |Ðåæèì çàïóñêà : { lv_run_mode }|.
 ==================
-For SAT
-REPORT zrundtp.
 
-"
-PARAMETER: p_dtp TYPE rsbkdtpnm OBLIGATORY DEFAULT 'DTP_00O2TPC0G0T5KUE5DC3C0F1KC'.
-
-DATA: r_dtp TYPE REF TO cl_rsbk_dtp.
-
-CALL METHOD cl_rsbk_dtp=>factory
-  EXPORTING
-    i_dtp   = p_dtp
-  RECEIVING
-    r_r_dtp = r_dtp.
-
-DATA l_r_request TYPE REF TO cl_rsbk_request.
-l_r_request = r_dtp->create_request( ).
-l_r_request->set_ctype( rsbc_c_ctype-sync ).
-l_r_request->doit( ).
 ========================
 
 In order to use the DTP error handler process, adjust the code in the End or Expert Routine in the corresponding data flow according to the following SAP consulting notes:
@@ -1845,12 +1791,7 @@ The reason for this kind of endless loop is that we waiting for a status message
 Ýòî âûðàæåíèå â ôèëüòðå íà óçëå òèïà "ïðîåêöèÿ" â CV !!!
 if("CC_IP_STORNO" ='X',  "CC_STORNO"='', 1=1 )
 Òàì ìîãóò áûòü íå òîëüêî ïîëå_îïåðàòîð_êîíñòàíòà, íî è òàêîå!!!
-============= 
-RSMNG BW/4 old administrator GUI
-=============
-RSDG_TRFN_ACTIVATE
-activate transformation
-====================
+
 Ïðèäóìàë òàêîé ñïîñîá ïåðåäà÷è èíôîðìàöèè ìåæäó âûáðàííîé ïåðåìåííîé è ìåòîäîì compute_table â BAdI, â êîòîðîì ìîæíî ìåíÿòü ñîñòàâ ñòðîê îò÷åòîâ
 Â ìåòîäå äëÿ ïåðåìåííûõ íà øàãå 3 ïèøåøü ÷òî-òî âðîäå ýòîãî
 
@@ -1892,16 +1833,8 @@ i_s_rkb1d åñòü êàê ïàðàìåòð â îáîèõ ìåòîäàõ îáîè
 ====================
 2619180 - Restricting 0INFOPROV InfoObject you see only technical names
 ===
-Selective deletion. Works for ADSO a swell. Delete only activated data. 
-Do not executes withou any filter criteria
-DELETE_FACTS Transaction code
-https://blogs.sap.com/2013/08/06/selective-deletion-in-process-chain/
-===
-RSDATA - transfer BW data via XML files
-====
-RSBKDTPREPAIR - for mass activation of DTPs
-===
-/SDF/SMON
+
+
 https://launchpad.support.sap.com/#/notes/2651881
 https://launchpad.support.sap.com/#/notes/3033103
 https://wiki.scn.sap.com/wiki/display/CPP/All+about+SMON
@@ -1909,14 +1842,6 @@ https://wiki.scn.sap.com/wiki/display/CPP/All+about+SMON
 HANA Studio / Eclipse Error: The file systemis read only
 I solved by a deletion of Database & Cache from preferences.
 go to Window-->Preferences, searc for Semantic File System & press "Delete Database & Cache".
-===================
-t-code RSMNG - BW/4 GUI administering data targets
-t-code BW4WEB (also known as “BW Fiori Launchpad”).
-t-code RSTRANGUI - show transformation
-t-code RSDTP - show DTP
-https://launchpad.support.sap.com/#/notes/2859559
-==============
-SVERS CVERS - component versions
 ===============
 Regexp
 --
