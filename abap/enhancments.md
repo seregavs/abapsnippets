@@ -18,7 +18,7 @@
 
 # SAP BAdI for ODP-extractors BADI_RODPS_DATASOURCE_EXT
 (TCode SE19) New BAdI from enh spot ODPS_DATASOURCE_EXT<br>
-ODP-extractors support both BADIs. But if both olad and new are implemented, the new one will be chosen<br>
+ODP-extractors support both BADIs<br>
 (https://help.sap.com/doc/saphelp_nw73ehp1/7.31.19/en-US/8a/4121d239094ffebac228e05771cb82/content.htm)<br>
 (https://help.sap.com/docs/SAP_BW4HANA/107a6e8a38b74ede94c833ca3b7b6f51/7b5bce89037f4897a69b02ecda028517.html)
 
@@ -43,11 +43,14 @@ ODP-extractors support both BADIs. But if both olad and new are implemented, the
 # SAP BAdI for virtual ky figures and characteristics RSROA_OLAP_BADI
 (Tcode SE19) New BAdI from enh spot RSROA<br>
 old version is RSR_OLAP_BADI
-+ DEFINE
-+ COMPUTE_SINGLE
-+ COMPUTE_TABLE<br>
++ DEFINE - This method is only called during generation of the query
++ INITIALIZE - determines the position (corresponding instance attributes)of the key figures/characteristics in the structure C_S_DATA. Called once for each read request
++ COMPUTE is available in two versions:
+  + COMPUTE_SINGLE - process single record by record
+  + COMPUTE_TABLE - process whole datapackage<br>
 
-(https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361383939.html)
+(https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361383939.html)<br>
+(https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361385718.html)
 
 # SAP BAdI for virtual analysis authorization RSEC_VIRTUAL_AUTH_BADI
 (Tcode SE19) New BAdi from enh.spot RSEC_VIRTUAL_AUTH<br>
