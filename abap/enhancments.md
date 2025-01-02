@@ -11,6 +11,7 @@
 (Tcode SE19)
 + DATA_TRANSFORM    Method for General Data Transfer
 + HIER_TRANSFORM    Method for Hierarchy Data Transfer<br>
+
 (https://community.sap.com/t5/technology-blogs-by-members/enhancement-of-bw-datasources-using-badi/ba-p/13085219)<br>
 (https://community.sap.com/t5/enterprise-resource-planning-blogs-by-members/badi-implementation-in-abap-on-hana-for-bw-extractors/ba-p/13510189)<br>
 (https://community.sap.com/t5/technology-blogs-by-members/implementation-of-badi-enhancing-0asset-attr/ba-p/13302933)
@@ -24,6 +25,7 @@ ODP-extractors support both BADIs. But if both olad and new are implemented, the
 # SAP BAdI for user-exit variables RSROA_VARIABLES_EXIT_BADI
 (Tcode SE19) New BAdi from enh.spot RSROA_VARIABLES_EXIT
 + PROCESS<br>
+
 (https://community.sap.com/t5/technology-blogs-by-members/customer-exit-variable-implementation-using-badi/ba-p/13535137)
 
 # SAP BAdI for F4-help RSR_VARIABLE_F4_RESTRICT_BADI
@@ -31,10 +33,11 @@ ODP-extractors support both BADIs. But if both olad and new are implemented, the
 + IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_FLAT  -  to restrict F4 help for value variables
 + IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_NODE  -  to restrict F4 help for ´hierarchy node variables
 + IF_RSR_VARIABLE_F4_RESTRICT~GET_RESTRICTION_HIER  -  to restrict F4 help for hierarchy variables<br>
+
 (https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361386039.html)
 
 # SAP BAdI for decision in process chain RSAR_CONNECTOR
-(Tcode SE19)\
+(Tcode SE19)<br>
 (https://community.sap.com/t5/technology-blogs-by-members/how-to-better-decision-in-process-chain-by-using-custom-formulas/ba-p/13218478)
 
 # SAP BAdI for virtual ky figures and characteristics RSROA_OLAP_BADI
@@ -43,6 +46,7 @@ old version is RSR_OLAP_BADI
 + DEFINE
 + COMPUTE_SINGLE
 + COMPUTE_TABLE<br>
+
 (https://help.sap.com/docs/SUPPORT_CONTENT/bwplaolap/3361383939.html)
 
 # SAP BAdI for virtual analysis authorization RSEC_VIRTUAL_AUTH_BADI
@@ -52,6 +56,8 @@ old version is RSR_OLAP_BADI
 # SAP BAdI for RRI-jump with changing parameteres RS_BBS_BADI
 (Tcode SE19) New classic BADI from RS_BBS_BADI<br>
 (https://community.sap.com/t5/technology-blogs-by-members/report-to-report-interface-rri/ba-p/13366601)
+
+---
 
 # SAP BAdI data provider RSO_BADI_PROVIDER
 not recommended to use<br>
